@@ -1,5 +1,5 @@
 import { CalendarDays, CircleDollarSign, MapPin, UserPlus, Users, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import api from '../services/api';
 
 function formatDate(value) {
@@ -18,6 +18,12 @@ export default function UserEventDetails({ event, onClose, onRegistered }) {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    setSubmitting(false);
+    setMessage('');
+    setError('');
+  }, [event?.id]);
 
   if (!event) return null;
 

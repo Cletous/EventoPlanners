@@ -7,3 +7,4 @@ backend/.env.local
 
 *.log
 .DS_Store
+export_code_batch.py

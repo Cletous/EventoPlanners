@@ -44,28 +44,40 @@ foreach ($tier in $tiers) {
     Write-Host ("Running {0}: {1} users, {2}s ramp-up, {3} loops" -f $tier.Name, $tier.Threads, $tier.RampUp, $tier.Loops) -ForegroundColor Cyan
     Write-Host "============================================================" -ForegroundColor Cyan
 
-    & $JMeterCommand `
-        -n `
-        -t $plan `
-        -Jhost=$HostName `
-        -Jport=$Port `
-        -JtestEmail=$TestEmail `
-        -JtestPassword=$TestPassword `
-        -Jthreads=$($tier.Threads) `
-        -JrampUp=$($tier.RampUp) `
-        -Jloops=$($tier.Loops) `
-        -JthinkTime=250 `
-        -l $jtl `
-        -e `
-        -o $tierDir
+    # Build each native JMeter property argument as one complete string.
+    # This avoids PowerShell splitting values such as -Jthreads=5 into
+    # separate arguments (-Jthreads= and 5), which JMeter reports as
+    # "Unknown arg: 5".
+    $jmeterArgs = @(
+        "-n",
+        "-t", $plan,
+        "-Jhost=$HostName",
+        "-Jport=$Port",
+        "-JtestEmail=$TestEmail",
+        "-JtestPassword=$TestPassword",
+        "-Jthreads=$($tier.Threads)",
+        "-JrampUp=$($tier.RampUp)",
+        "-Jloops=$($tier.Loops)",
+        "-JthinkTime=250",
+        "-l", $jtl,
+        "-e",
+        "-o", $tierDir
+    )
+
+    & $JMeterCommand @jmeterArgs
 
     if ($LASTEXITCODE -ne 0) {
         throw "JMeter $($tier.Name) test failed with exit code $LASTEXITCODE."
     }
 
-    Write-Host ("Completed {0}. HTML report: {1}\index.html" -f $tier.Name, $tierDir) -ForegroundColor Green
+    $indexFile = Join-Path $tierDir "index.html"
+    if (-not (Test-Path $indexFile)) {
+        throw "JMeter $($tier.Name) completed but HTML report was not created: $indexFile"
+    }
+
+    Write-Host ("Completed {0}. HTML report: {1}" -f $tier.Name, $indexFile) -ForegroundColor Green
 }
 
 Write-Host ""
-Write-Host "All three performance tiers completed." -ForegroundColor Green
+Write-Host "All three performance tiers completed successfully." -ForegroundColor Green
 Write-Host ("Results folder: {0}" -f $resultsRoot) -ForegroundColor Green

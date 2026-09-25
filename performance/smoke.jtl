@@ -1,0 +1,5 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1790376604740,110,POST Login,200,OK,EventoPlanners Virtual Users 1-1,text,true,,766,296,1,1,http://localhost:3001/api/auth/login,107,0,25
+1790376605129,28,GET Health,200,OK,EventoPlanners Virtual Users 1-1,text,true,,511,373,1,1,http://localhost:3001/api/health,28,0,0
+1790376605413,690,GET Published Events,200,OK,EventoPlanners Virtual Users 1-1,text,true,,1305,373,1,1,http://localhost:3001/api/events,690,0,0
+1790376606363,34,GET User Dashboard,200,OK,EventoPlanners Virtual Users 1-1,text,true,,1088,381,1,1,http://localhost:3001/api/user/dashboard,34,0,0

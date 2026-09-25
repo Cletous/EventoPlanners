@@ -4,6 +4,7 @@ import AdminEventsPage from './pages/AdminEventsPage';
 import DashboardPage from './pages/DashboardPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
+import PaymentReturnPage from './pages/PaymentReturnPage';
 import RegisterPage from './pages/RegisterPage';
 import UserEventsPage from './pages/UserEventsPage';
 import UserRegistrationsPage from './pages/UserRegistrationsPage';
@@ -35,6 +36,14 @@ function App() {
         element={(
           <ProtectedRoute roles={['user']}>
             <UserRegistrationsPage />
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/payment/return"
+        element={(
+          <ProtectedRoute roles={['user']}>
+            <PaymentReturnPage />
           </ProtectedRoute>
         )}
       />

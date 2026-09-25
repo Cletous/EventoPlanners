@@ -1,4 +1,11 @@
-import { CalendarDays, ChevronLeft, CircleDollarSign, MapPin, XCircle } from 'lucide-react';
+import {
+  CalendarDays,
+  ChevronLeft,
+  CircleDollarSign,
+  CreditCard,
+  MapPin,
+  XCircle,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -27,6 +34,7 @@ export default function UserRegistrationsPage() {
   const [message, setMessage] = useState('');
   const [cancelTarget, setCancelTarget] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [payingId, setPayingId] = useState(null);
 
   const loadRegistrations = async () => {
     setLoading(true);
@@ -42,6 +50,32 @@ export default function UserRegistrationsPage() {
   };
 
   useEffect(() => { loadRegistrations(); }, []);
+
+  const startPayment = async (registration) => {
+    setPayingId(registration.id);
+    setError('');
+    setMessage('');
+
+    try {
+      const response = await api.post('/payments/paynow/initiate', {
+        registration_id: registration.id,
+      });
+
+      const redirectUrl = response.data.redirect_url;
+      if (!redirectUrl) {
+        throw new Error('Paynow did not provide a checkout URL.');
+      }
+
+      window.location.assign(redirectUrl);
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message
+          || requestError.message
+          || 'Unable to start Paynow payment.',
+      );
+      setPayingId(null);
+    }
+  };
 
   const cancelRegistration = async () => {
     if (!cancelTarget) return;
@@ -66,7 +100,7 @@ export default function UserRegistrationsPage() {
       <div className="mx-auto max-w-6xl px-6 py-10">
         <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1.5 text-sm font-semibold text-indigo-700"><CalendarDays size={16} /> My registrations</span>
         <h1 className="mt-4 text-4xl font-bold tracking-tight text-slate-950">Your event registrations</h1>
-        <p className="mt-2 text-slate-500">View confirmed, pending-payment and cancelled registrations.</p>
+        <p className="mt-2 text-slate-500">View registrations and pay securely through Paynow for paid events.</p>
 
         {message && <div className="mt-6 rounded-2xl border border-green-100 bg-green-50 p-4 text-sm font-semibold text-green-700">{message}</div>}
         {error && <div className="mt-6 rounded-2xl border border-red-100 bg-red-50 p-4 text-sm font-semibold text-red-700">{error}</div>}
@@ -79,7 +113,22 @@ export default function UserRegistrationsPage() {
               <article key={registration.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="flex items-start justify-between gap-4"><div><span className={`rounded-full px-2.5 py-1 text-xs font-bold ${statusClass(registration.status)}`}>{statusLabel(registration.status)}</span><h2 className="mt-3 text-xl font-bold text-slate-950">{registration.title}</h2></div><span className="text-xs font-semibold text-slate-400">#{registration.id}</span></div>
                 <div className="mt-5 space-y-2.5 text-sm text-slate-600"><p className="flex items-center gap-2"><MapPin size={16} className="text-indigo-500" /> {registration.venue}</p><p className="flex items-center gap-2"><CalendarDays size={16} className="text-indigo-500" /> {formatDate(registration.event_date)} at {String(registration.start_time).slice(0, 5)}</p><p className="flex items-center gap-2"><CircleDollarSign size={16} className="text-indigo-500" /> {Number(registration.registration_fee) === 0 ? 'Free' : `US$${Number(registration.registration_fee).toFixed(2)}`}</p></div>
-                {registration.status === 'pending_payment' && <button type="button" onClick={() => setCancelTarget(registration)} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 px-4 py-3 font-semibold text-red-600 hover:bg-red-50"><XCircle size={18} /> Cancel unpaid registration</button>}
+
+                {registration.status === 'pending_payment' && (
+                  <div className="mt-6 space-y-3">
+                    <button
+                      type="button"
+                      onClick={() => startPayment(registration)}
+                      disabled={payingId !== null}
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      <CreditCard size={18} />
+                      {payingId === registration.id ? 'Opening Paynow...' : 'Pay with Paynow'}
+                    </button>
+                    <button type="button" onClick={() => setCancelTarget(registration)} disabled={payingId !== null} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 px-4 py-3 font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"><XCircle size={18} /> Cancel unpaid registration</button>
+                  </div>
+                )}
+
                 {registration.status === 'confirmed' && <p className="mt-6 rounded-xl bg-green-50 p-3 text-sm font-semibold text-green-700">Your place is confirmed.</p>}
                 {registration.status === 'cancelled' && <p className="mt-6 rounded-xl bg-slate-50 p-3 text-sm text-slate-600">This registration was cancelled. You may register again while the event is published and has capacity.</p>}
               </article>

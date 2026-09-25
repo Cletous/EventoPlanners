@@ -3,7 +3,14 @@ module.exports = {
   roots: ['<rootDir>/tests'],
   testMatch: ['**/api-live.test.js'],
   transform: {
-    '^.+\\.js$': 'babel-jest',
+    '^.+\\.js$': [
+      'babel-jest',
+      {
+        presets: [
+          ['@babel/preset-env', { targets: { node: 'current' } }],
+        ],
+      },
+    ],
   },
   clearMocks: true,
 };

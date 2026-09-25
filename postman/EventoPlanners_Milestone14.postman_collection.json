@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "EventoPlanners - Milestone 14 API Testing",
+    "name": "EventoPlanners - API Testing",
     "description": "Postman collection for EventoPlanners API and manual system testing. Run against the local Next.js backend on port 3001. Credentials and generated IDs are stored only in the Postman environment; do not place real secrets in this collection.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -70,7 +70,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Milestone 14 Test User\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -352,7 +352,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"Milestone 14 Paid Event\",\n  \"description\": \"Event created for API and manual system testing.\",\n  \"venue\": \"UZ Test Venue\",\n  \"event_date\": \"{{eventDate}}\",\n  \"start_time\": \"10:00\",\n  \"registration_fee\": 5,\n  \"capacity\": 25,\n  \"status\": \"published\",\n  \"image_url\": \"\"\n}",
+              "raw": "{\n  \"title\": \"Paid Event\",\n  \"description\": \"Event created for API and manual system testing.\",\n  \"venue\": \"UZ Test Venue\",\n  \"event_date\": \"{{eventDate}}\",\n  \"start_time\": \"10:00\",\n  \"registration_fee\": 5,\n  \"capacity\": 25,\n  \"status\": \"published\",\n  \"image_url\": \"\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -645,7 +645,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/events?search=Milestone 14",
+              "raw": "{{baseUrl}}/events?search=Event",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -655,7 +655,7 @@
               "query": [
                 {
                   "key": "search",
-                  "value": "Milestone 14"
+                  "value": "Event"
                 }
               ]
             },

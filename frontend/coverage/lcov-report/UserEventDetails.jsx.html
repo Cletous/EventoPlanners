@@ -344,7 +344,7 @@ export default function <span class="fstat-no" title="function not covered" >Use
             {submitting ? 'Registering...' : isFull ? 'Event full' : message ? 'Registered' : Number(event.registration_fee) === 0 ? 'Register for free' : 'Register for event'}
           &lt;/button&gt;
           {Number(event.registration_fee) &gt; 0 &amp;&amp; !message &amp;&amp; !isFull &amp;&amp; (
-            &lt;p className="mt-3 text-center text-sm text-slate-500"&gt;This is a paid event. Your registration will remain pending until payment is completed in Milestone 9.&lt;/p&gt;
+            &lt;p className="mt-3 text-center text-sm text-slate-500"&gt;This is a paid event. Your registration will remain pending until payment is completed.&lt;/p&gt;
           )}
         &lt;/div&gt;
       &lt;/div&gt;

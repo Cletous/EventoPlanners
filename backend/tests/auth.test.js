@@ -8,7 +8,7 @@ import {
 const originalSecret = process.env.JWT_SECRET;
 
 beforeAll(() => {
-  process.env.JWT_SECRET = 'milestone-13-automated-test-secret';
+  process.env.JWT_SECRET = 'automated-test-secret';
 });
 
 afterAll(() => {

@@ -1,21 +1,37 @@
-import { useEffect, useState } from "react";
-import api from "./services/api";
+import { useEffect, useState } from 'react';
+import api from './services/api';
 
 function App() {
-  const [status, setStatus] = useState("Checking...");
+  const [status, setStatus] = useState('Checking...');
 
   useEffect(() => {
     const checkApi = async () => {
       try {
-        const response = await api.get("/health");
+        const response = await api.get('/health');
 
-        setStatus(
-          response.data.database
-            ? "Frontend, Backend and Database are connected"
-            : "API connected but database failed",
-        );
+        if (response.data?.database === true) {
+          setStatus('Frontend, Backend and Database are connected');
+          return;
+        }
+
+        setStatus('Backend connected but database health check failed');
       } catch (error) {
-        setStatus("Unable to connect to backend");
+        // Axios puts an HTTP response here when Next.js was reached but returned
+        // an error status (for example, 503 when MySQL is unavailable).
+        if (error.response) {
+          if (error.response.data?.database === false) {
+            setStatus('Backend connected but database connection failed');
+            return;
+          }
+
+          setStatus(`Backend returned HTTP ${error.response.status}`);
+          return;
+        }
+
+        // No HTTP response means the browser could not obtain a response from
+        // the backend at all (server stopped, wrong URL/port, blocked request,
+        // timeout, etc.).
+        setStatus('Unable to connect to backend');
       }
     };
 

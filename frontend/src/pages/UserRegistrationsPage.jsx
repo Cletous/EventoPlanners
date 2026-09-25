@@ -143,15 +143,26 @@ export default function UserRegistrationsPage() {
                   {registration.status === 'pending_payment' && (
                     <div className="mt-6 space-y-3">
                       {hasPayment && paymentPending && canPoll && (
-                        <button
-                          type="button"
-                          onClick={() => checkPayment(registration)}
-                          disabled={checkingReference !== null || payingId !== null}
-                          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-3 font-semibold text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          <RefreshCw size={18} className={checkingReference === registration.latest_payment_reference ? 'animate-spin' : ''} />
-                          {checkingReference === registration.latest_payment_reference ? 'Checking Paynow...' : 'Check payment status'}
-                        </button>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <button
+                            type="button"
+                            onClick={() => checkPayment(registration)}
+                            disabled={checkingReference !== null || payingId !== null}
+                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-3 font-semibold text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            <RefreshCw size={18} className={checkingReference === registration.latest_payment_reference ? 'animate-spin' : ''} />
+                            {checkingReference === registration.latest_payment_reference ? 'Checking Paynow...' : 'Check payment status'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => startPayment(registration)}
+                            disabled={payingId !== null || checkingReference !== null}
+                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            <CreditCard size={18} />
+                            {payingId === registration.id ? 'Opening Paynow...' : 'Make a new payment'}
+                          </button>
+                        </div>
                       )}
 
                       {hasPayment && paymentPending && !canPoll && (
@@ -195,3 +206,4 @@ export default function UserRegistrationsPage() {
     </main>
   );
 }
+

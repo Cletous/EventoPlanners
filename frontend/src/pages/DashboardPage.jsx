@@ -1,8 +1,10 @@
+
 import {
   CalendarDays,
   CircleDollarSign,
   Clock3,
   CreditCard,
+  FileBarChart,
   LogOut,
   Search,
   ShieldCheck,
@@ -284,10 +286,11 @@ export default function DashboardPage({ admin = false }) {
           <h2 className="font-bold text-slate-950">Quick actions</h2>
           <p className="mt-1 text-sm text-slate-500">Open the main areas you use most often.</p>
           {admin ? (
-            <div className="mt-5 grid gap-4 md:grid-cols-3">
+            <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <Link to="/admin/events" className="flex items-center justify-between gap-4 rounded-2xl border border-indigo-100 bg-indigo-50 p-5 hover:bg-indigo-100/70"><div className="flex items-center gap-3"><CalendarDays className="text-indigo-600" size={21} /><span className="font-bold text-slate-900">Manage events</span></div><span className="font-bold text-indigo-700">→</span></Link>
               <Link to="/admin/registrations" className="flex items-center justify-between gap-4 rounded-2xl border border-sky-100 bg-sky-50 p-5 hover:bg-sky-100/70"><div className="flex items-center gap-3"><TicketCheck className="text-sky-600" size={21} /><span className="font-bold text-slate-900">Registrations</span></div><span className="font-bold text-sky-700">→</span></Link>
               <Link to="/admin/payments" className="flex items-center justify-between gap-4 rounded-2xl border border-violet-100 bg-violet-50 p-5 hover:bg-violet-100/70"><div className="flex items-center gap-3"><CircleDollarSign className="text-violet-600" size={21} /><span className="font-bold text-slate-900">Payments</span></div><span className="font-bold text-violet-700">→</span></Link>
+              <Link to="/admin/reports" className="flex items-center justify-between gap-4 rounded-2xl border border-emerald-100 bg-emerald-50 p-5 hover:bg-emerald-100/70"><div className="flex items-center gap-3"><FileBarChart className="text-emerald-600" size={21} /><span className="font-bold text-slate-900">Reports</span></div><span className="font-bold text-emerald-700">→</span></Link>
             </div>
           ) : (
             <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -300,3 +303,4 @@ export default function DashboardPage({ admin = false }) {
     </main>
   );
 }
+

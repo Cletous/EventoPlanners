@@ -12,7 +12,6 @@ export default function DashboardPage({ admin = false }) {
 
   useEffect(() => {
     if (!admin) return;
-
     api.get('/admin/check')
       .then((response) => setAdminCheck(response.data.message))
       .catch((error) => setAdminCheck(error.response?.data?.message || 'Administrator access check failed.'));
@@ -35,41 +34,28 @@ export default function DashboardPage({ admin = false }) {
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">{admin ? <ShieldCheck size={24} /> : <UserRound size={24} />}</div>
           <div className="mt-5 flex flex-wrap items-center gap-3"><h1 className="text-3xl font-bold tracking-tight text-slate-950">Welcome, {user.name}</h1><span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-violet-700">{user.role}</span></div>
-          <p className="mt-2 text-slate-500">{admin ? 'Manage EventoPlanners events and payment status from this area.' : 'Discover events, manage registrations and confirm Paynow payment status.'}</p>
+          <p className="mt-2 text-slate-500">{admin ? 'Manage EventoPlanners events, registrations and payment attempts from this area.' : 'Discover events, manage registrations and confirm Paynow payment status.'}</p>
           {admin && <div className="mt-6 rounded-2xl bg-green-50 p-4 text-sm font-semibold text-green-700">{adminCheck}</div>}
 
           {admin ? (
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
               <Link to="/admin/events" className="flex items-center justify-between gap-4 rounded-2xl border border-indigo-100 bg-indigo-50 p-5 transition hover:border-indigo-200 hover:bg-indigo-100/70">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm"><CalendarDays size={22} /></div>
-                  <div><p className="font-bold text-slate-950">Manage events</p><p className="mt-1 text-sm text-slate-600">Create, edit, publish, close, search and delete eligible events.</p></div>
-                </div>
-                <span className="text-sm font-bold text-indigo-700">Open →</span>
+                <div className="flex items-center gap-4"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm"><CalendarDays size={22} /></div><div><p className="font-bold text-slate-950">Manage events</p><p className="mt-1 text-sm text-slate-600">Create, edit, publish, close, search and delete eligible events.</p></div></div><span className="text-sm font-bold text-indigo-700">Open →</span>
+              </Link>
+              <Link to="/admin/registrations" className="flex items-center justify-between gap-4 rounded-2xl border border-sky-100 bg-sky-50 p-5 transition hover:border-sky-200 hover:bg-sky-100/70">
+                <div className="flex items-center gap-4"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-sky-600 shadow-sm"><TicketCheck size={22} /></div><div><p className="font-bold text-slate-950">Registrations</p><p className="mt-1 text-sm text-slate-600">Review attendees, registration status and latest payment information.</p></div></div><span className="text-sm font-bold text-sky-700">Open →</span>
               </Link>
               <Link to="/admin/payments" className="flex items-center justify-between gap-4 rounded-2xl border border-violet-100 bg-violet-50 p-5 transition hover:border-violet-200 hover:bg-violet-100/70">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm"><CircleDollarSign size={22} /></div>
-                  <div><p className="font-bold text-slate-950">Payment status</p><p className="mt-1 text-sm text-slate-600">View payment attempts and ask Paynow for the latest status.</p></div>
-                </div>
-                <span className="text-sm font-bold text-violet-700">Open →</span>
+                <div className="flex items-center gap-4"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm"><CircleDollarSign size={22} /></div><div><p className="font-bold text-slate-950">Payments</p><p className="mt-1 text-sm text-slate-600">Search payment attempts and ask Paynow for the latest status.</p></div></div><span className="text-sm font-bold text-violet-700">Open →</span>
               </Link>
             </div>
           ) : (
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <Link to="/user/events" className="flex items-center justify-between gap-4 rounded-2xl border border-indigo-100 bg-indigo-50 p-5 transition hover:border-indigo-200 hover:bg-indigo-100/70">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm"><Search size={22} /></div>
-                  <div><p className="font-bold text-slate-950">Browse events</p><p className="mt-1 text-sm text-slate-600">Search published events and register for an available event.</p></div>
-                </div>
-                <span className="text-sm font-bold text-indigo-700">Browse →</span>
+                <div className="flex items-center gap-4"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm"><Search size={22} /></div><div><p className="font-bold text-slate-950">Browse events</p><p className="mt-1 text-sm text-slate-600">Search published events and register for an available event.</p></div></div><span className="text-sm font-bold text-indigo-700">Browse →</span>
               </Link>
               <Link to="/user/registrations" className="flex items-center justify-between gap-4 rounded-2xl border border-violet-100 bg-violet-50 p-5 transition hover:border-violet-200 hover:bg-violet-100/70">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm"><TicketCheck size={22} /></div>
-                  <div><p className="font-bold text-slate-950">My registrations</p><p className="mt-1 text-sm text-slate-600">View registrations, pay, and check Paynow payment status.</p></div>
-                </div>
-                <span className="text-sm font-bold text-violet-700">View →</span>
+                <div className="flex items-center gap-4"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm"><TicketCheck size={22} /></div><div><p className="font-bold text-slate-950">My registrations</p><p className="mt-1 text-sm text-slate-600">View registrations, pay, and check Paynow payment status.</p></div></div><span className="text-sm font-bold text-violet-700">View →</span>
               </Link>
             </div>
           )}

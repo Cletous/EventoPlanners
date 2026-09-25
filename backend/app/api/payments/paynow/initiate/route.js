@@ -54,11 +54,9 @@ export async function POST(request) {
     const [rows] = await connection.execute(
       `SELECT
          r.id, r.status AS registration_status,
-         e.id AS event_id, e.title, e.registration_fee,
-         u.email
+         e.id AS event_id, e.title, e.registration_fee
        FROM registrations r
        INNER JOIN events e ON e.id = r.event_id
-       INNER JOIN users u ON u.id = r.user_id
        WHERE r.id = ? AND r.user_id = ?
        LIMIT 1`,
       [registrationId, userId],
@@ -100,7 +98,6 @@ export async function POST(request) {
         reference,
         amount,
         title: registration.title,
-        email: registration.email,
       });
 
       if (paynowResponse.paynowReference) {

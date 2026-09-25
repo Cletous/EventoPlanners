@@ -14,6 +14,7 @@ export function getPaynowConfig() {
   return {
     integrationId: requiredEnv('PAYNOW_INTEGRATION_ID'),
     integrationKey: requiredEnv('PAYNOW_INTEGRATION_KEY'),
+    integrationEmail: requiredEnv('PAYNOW_INTEGRATION_EMAIL'),
     resultUrl: requiredEnv('PAYNOW_RESULT_URL'),
     returnUrl: requiredEnv('PAYNOW_RETURN_URL'),
   };
@@ -71,7 +72,7 @@ function paynowErrorMessage(data) {
     : 'Paynow could not initiate the transaction.';
 }
 
-export async function initiatePaynowTransaction({ reference, amount, title, email }) {
+export async function initiatePaynowTransaction({ reference, amount, title }) {
   const config = getPaynowConfig();
   const returnUrl = buildPaynowReturnUrl(reference);
   const amountText = Number(amount).toFixed(2);
@@ -83,7 +84,10 @@ export async function initiatePaynowTransaction({ reference, amount, title, emai
     ['additionalinfo', `EventoPlanners registration: ${title}`],
     ['returnurl', returnUrl],
     ['resulturl', config.resultUrl],
-    ['authemail', email],
+    // In Paynow test mode, authemail must match a login email on the
+    // merchant account that owns the integration. The attendee email stays
+    // in EventoPlanners; Paynow authentication uses this configured email.
+    ['authemail', config.integrationEmail],
     ['status', 'Message'],
   ];
 

@@ -32,7 +32,7 @@ export function generatePaynowHash(values, integrationKey) {
 }
 
 export function parsePaynowMessage(rawBody) {
-  const params = new URLSearchParams(rawBody);
+  const params = new URLSearchParams(String(rawBody || '').trim());
   const entries = [];
   const data = {};
 
@@ -54,10 +54,21 @@ export function verifyPaynowMessage(entries, integrationKey) {
     .map(([, value]) => value);
 
   const generatedHash = generatePaynowHash(values, integrationKey);
+  const supplied = String(suppliedHash).trim().toUpperCase();
+
+  if (!/^[0-9A-F]{128}$/.test(supplied)) return false;
+
   const expected = Buffer.from(generatedHash, 'utf8');
-  const actual = Buffer.from(String(suppliedHash).toUpperCase(), 'utf8');
+  const actual = Buffer.from(supplied, 'utf8');
 
   return expected.length === actual.length && crypto.timingSafeEqual(expected, actual);
+}
+
+function paynowErrorMessage(data) {
+  const error = String(data?.error || '').trim();
+  return error
+    ? `Paynow rejected the transaction: ${error}`
+    : 'Paynow could not initiate the transaction.';
 }
 
 export async function initiatePaynowTransaction({ reference, amount, title, email }) {
@@ -88,23 +99,32 @@ export async function initiatePaynowTransaction({ reference, amount, title, emai
 
   const rawResponse = await response.text();
   const parsed = parsePaynowMessage(rawResponse);
+  const status = String(parsed.data.status || '').trim().toLowerCase();
 
   if (!response.ok) {
     throw new Error(`Paynow returned HTTP ${response.status}.`);
   }
 
-  if (!verifyPaynowMessage(parsed.entries, config.integrationKey)) {
-    throw new Error('Paynow response hash validation failed.');
+  // Paynow documents unsuccessful initiate responses as Status=Error&Error=...
+  // and those responses may not contain a hash. Surface that real message first
+  // instead of misreporting it as a response-hash failure.
+  if (status === 'error') {
+    throw new Error(paynowErrorMessage(parsed.data));
   }
 
-  const status = parsed.data.status?.toLowerCase();
+  // Successful responses must still be authenticated before using browserurl.
+  if (!verifyPaynowMessage(parsed.entries, config.integrationKey)) {
+    throw new Error('Paynow response hash validation failed. Check the Paynow integration key and response integrity.');
+  }
+
   if (status !== 'ok' || !parsed.data.browserurl) {
-    throw new Error(parsed.data.error || 'Paynow could not initiate the transaction.');
+    throw new Error(paynowErrorMessage(parsed.data));
   }
 
   return {
     redirectUrl: parsed.data.browserurl,
     paynowReference: parsed.data.paynowreference || null,
+    pollUrl: parsed.data.pollurl || null,
   };
 }
 

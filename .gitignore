@@ -9,3 +9,4 @@ backend/.env.local
 .DS_Store
 export_code_batch.py
 /code-export
+/performance/results

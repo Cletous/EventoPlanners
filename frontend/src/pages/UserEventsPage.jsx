@@ -71,9 +71,12 @@ export default function UserEventsPage() {
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4">
           <Logo compact />
-          <Link to="/user/dashboard" className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
-            <ChevronLeft size={17} /> Dashboard
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link to="/user/registrations" className="rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-2.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-100">My registrations</Link>
+            <Link to="/user/dashboard" className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+              <ChevronLeft size={17} /> Dashboard
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -162,7 +165,11 @@ export default function UserEventsPage() {
         )}
       </div>
 
-      <UserEventDetails event={selectedEvent} onClose={() => setSelectedEvent(null)} />
+      <UserEventDetails
+        event={selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+        onRegistered={() => loadEvents(search)}
+      />
     </main>
   );
 }

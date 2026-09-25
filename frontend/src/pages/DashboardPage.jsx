@@ -1,4 +1,4 @@
-import { CalendarDays, LogOut, Search, ShieldCheck, UserRound } from 'lucide-react';
+import { CalendarDays, LogOut, Search, ShieldCheck, TicketCheck, UserRound } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
@@ -47,13 +47,22 @@ export default function DashboardPage({ admin = false }) {
               <span className="text-sm font-bold text-indigo-700">Open →</span>
             </Link>
           ) : (
-            <Link to="/user/events" className="mt-6 flex items-center justify-between gap-4 rounded-2xl border border-indigo-100 bg-indigo-50 p-5 transition hover:border-indigo-200 hover:bg-indigo-100/70">
-              <div className="flex items-center gap-4">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm"><Search size={22} /></div>
-                <div><p className="font-bold text-slate-950">Browse events</p><p className="mt-1 text-sm text-slate-600">Search published events and view their details, fees, dates and availability.</p></div>
-              </div>
-              <span className="text-sm font-bold text-indigo-700">Browse →</span>
-            </Link>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <Link to="/user/events" className="flex items-center justify-between gap-4 rounded-2xl border border-indigo-100 bg-indigo-50 p-5 transition hover:border-indigo-200 hover:bg-indigo-100/70">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm"><Search size={22} /></div>
+                  <div><p className="font-bold text-slate-950">Browse events</p><p className="mt-1 text-sm text-slate-600">Search published events and register for an available event.</p></div>
+                </div>
+                <span className="text-sm font-bold text-indigo-700">Browse →</span>
+              </Link>
+              <Link to="/user/registrations" className="flex items-center justify-between gap-4 rounded-2xl border border-violet-100 bg-violet-50 p-5 transition hover:border-violet-200 hover:bg-violet-100/70">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm"><TicketCheck size={22} /></div>
+                  <div><p className="font-bold text-slate-950">My registrations</p><p className="mt-1 text-sm text-slate-600">View confirmed, pending-payment and cancelled registrations.</p></div>
+                </div>
+                <span className="text-sm font-bold text-violet-700">View →</span>
+              </Link>
+            </div>
           )}
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2">

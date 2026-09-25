@@ -1,4 +1,4 @@
-import { CalendarDays, LogOut, ShieldCheck, UserRound } from 'lucide-react';
+import { CalendarDays, LogOut, Search, ShieldCheck, UserRound } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
@@ -35,16 +35,24 @@ export default function DashboardPage({ admin = false }) {
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">{admin ? <ShieldCheck size={24} /> : <UserRound size={24} />}</div>
           <div className="mt-5 flex flex-wrap items-center gap-3"><h1 className="text-3xl font-bold tracking-tight text-slate-950">Welcome, {user.name}</h1><span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-violet-700">{user.role}</span></div>
-          <p className="mt-2 text-slate-500">{admin ? 'Manage EventoPlanners events and administration tasks from this area.' : 'Attendee authentication is working. Event browsing will be added in Milestone 7.'}</p>
+          <p className="mt-2 text-slate-500">{admin ? 'Manage EventoPlanners events and administration tasks from this area.' : 'Discover and view events currently published on EventoPlanners.'}</p>
           {admin && <div className="mt-6 rounded-2xl bg-green-50 p-4 text-sm font-semibold text-green-700">{adminCheck}</div>}
 
-          {admin && (
+          {admin ? (
             <Link to="/admin/events" className="mt-6 flex items-center justify-between gap-4 rounded-2xl border border-indigo-100 bg-indigo-50 p-5 transition hover:border-indigo-200 hover:bg-indigo-100/70">
               <div className="flex items-center gap-4">
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm"><CalendarDays size={22} /></div>
                 <div><p className="font-bold text-slate-950">Manage events</p><p className="mt-1 text-sm text-slate-600">Create, edit, publish, close, search and delete eligible events.</p></div>
               </div>
               <span className="text-sm font-bold text-indigo-700">Open →</span>
+            </Link>
+          ) : (
+            <Link to="/user/events" className="mt-6 flex items-center justify-between gap-4 rounded-2xl border border-indigo-100 bg-indigo-50 p-5 transition hover:border-indigo-200 hover:bg-indigo-100/70">
+              <div className="flex items-center gap-4">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm"><Search size={22} /></div>
+                <div><p className="font-bold text-slate-950">Browse events</p><p className="mt-1 text-sm text-slate-600">Search published events and view their details, fees, dates and availability.</p></div>
+              </div>
+              <span className="text-sm font-bold text-indigo-700">Browse →</span>
             </Link>
           )}
 

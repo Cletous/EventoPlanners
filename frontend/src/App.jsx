@@ -5,6 +5,7 @@ import DashboardPage from './pages/DashboardPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import UserEventsPage from './pages/UserEventsPage';
 
 function App() {
   return (
@@ -17,6 +18,14 @@ function App() {
         element={(
           <ProtectedRoute roles={['user']}>
             <DashboardPage />
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/user/events"
+        element={(
+          <ProtectedRoute roles={['user']}>
+            <UserEventsPage />
           </ProtectedRoute>
         )}
       />

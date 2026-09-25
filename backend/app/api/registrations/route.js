@@ -26,9 +26,19 @@ export async function GET(request) {
       `SELECT
          r.id, r.user_id, r.event_id, r.status, r.created_at, r.updated_at,
          e.title, e.description, e.venue, e.event_date, e.start_time,
-         e.registration_fee, e.capacity, e.status AS event_status, e.image_url
+         e.registration_fee, e.capacity, e.status AS event_status, e.image_url,
+         p.reference AS latest_payment_reference,
+         p.status AS latest_payment_status,
+         (p.poll_url IS NOT NULL AND p.poll_url <> '') AS latest_payment_pollable
        FROM registrations r
        INNER JOIN events e ON e.id = r.event_id
+       LEFT JOIN payments p ON p.id = (
+         SELECT p2.id
+         FROM payments p2
+         WHERE p2.registration_id = r.id
+         ORDER BY p2.id DESC
+         LIMIT 1
+       )
        WHERE r.user_id = ?
        ORDER BY r.created_at DESC, r.id DESC`,
       [userId],

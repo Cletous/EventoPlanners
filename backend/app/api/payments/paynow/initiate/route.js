@@ -100,14 +100,14 @@ export async function POST(request) {
         title: registration.title,
       });
 
-      if (paynowResponse.paynowReference) {
-        await connection.execute(
-          `UPDATE payments
-           SET paynow_reference = ?, updated_at = CURRENT_TIMESTAMP
-           WHERE id = ?`,
-          [paynowResponse.paynowReference, paymentId],
-        );
-      }
+      await connection.execute(
+        `UPDATE payments
+         SET paynow_reference = ?,
+             poll_url = ?,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?`,
+        [paynowResponse.paynowReference, paynowResponse.pollUrl, paymentId],
+      );
 
       return NextResponse.json({
         success: true,
@@ -118,6 +118,7 @@ export async function POST(request) {
           reference,
           amount: amount.toFixed(2),
           status: 'pending',
+          can_poll: true,
         },
         redirect_url: paynowResponse.redirectUrl,
       });

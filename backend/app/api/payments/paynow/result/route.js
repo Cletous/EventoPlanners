@@ -66,14 +66,16 @@ export async function POST(request) {
 
       const mappedStatus = mapPaynowStatus(parsed.data.status);
       const paynowReference = parsed.data.paynowreference || null;
+      const pollUrl = parsed.data.pollurl || null;
 
       await connection.execute(
         `UPDATE payments
-         SET status = ?,
+         SET status = CASE WHEN status = 'paid' THEN 'paid' ELSE ? END,
              paynow_reference = COALESCE(?, paynow_reference),
+             poll_url = COALESCE(?, poll_url),
              updated_at = CURRENT_TIMESTAMP
          WHERE id = ?`,
-        [mappedStatus, paynowReference, payment.id],
+        [mappedStatus, paynowReference, pollUrl, payment.id],
       );
 
       if (mappedStatus === 'paid' && payment.registration_status !== 'confirmed') {

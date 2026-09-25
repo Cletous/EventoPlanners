@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 
 const PAYNOW_INIT_URL = 'https://www.paynow.co.zw/interface/initiatetransaction';
+const LOCAL_RESULT_URL = 'http://localhost:3001/api/payments/paynow/result';
 
 function requiredEnv(name) {
   const value = process.env[name]?.trim();
@@ -15,7 +16,10 @@ export function getPaynowConfig() {
     integrationId: requiredEnv('PAYNOW_INTEGRATION_ID'),
     integrationKey: requiredEnv('PAYNOW_INTEGRATION_KEY'),
     integrationEmail: requiredEnv('PAYNOW_INTEGRATION_EMAIL'),
-    resultUrl: requiredEnv('PAYNOW_RESULT_URL'),
+    // Paynow requires a result URL in the initiation message. During local
+    // development we do not depend on inbound callbacks; status is confirmed
+    // by polling the Paynow poll URL instead.
+    resultUrl: process.env.PAYNOW_RESULT_URL?.trim() || LOCAL_RESULT_URL,
     returnUrl: requiredEnv('PAYNOW_RETURN_URL'),
   };
 }
@@ -69,7 +73,25 @@ function paynowErrorMessage(data) {
   const error = String(data?.error || '').trim();
   return error
     ? `Paynow rejected the transaction: ${error}`
-    : 'Paynow could not initiate the transaction.';
+    : 'Paynow could not complete the request.';
+}
+
+function assertPaynowPollUrl(pollUrl) {
+  let url;
+  try {
+    url = new URL(String(pollUrl || '').trim());
+  } catch {
+    throw new Error('The saved Paynow poll URL is invalid.');
+  }
+
+  const hostname = url.hostname.toLowerCase();
+  const isPaynowHost = hostname === 'paynow.co.zw' || hostname.endsWith('.paynow.co.zw');
+
+  if (!isPaynowHost || !['http:', 'https:'].includes(url.protocol)) {
+    throw new Error('The saved Paynow poll URL is not trusted.');
+  }
+
+  return url.toString();
 }
 
 export async function initiatePaynowTransaction({ reference, amount, title }) {
@@ -84,9 +106,6 @@ export async function initiatePaynowTransaction({ reference, amount, title }) {
     ['additionalinfo', `EventoPlanners registration: ${title}`],
     ['returnurl', returnUrl],
     ['resulturl', config.resultUrl],
-    // In Paynow test mode, authemail must match a login email on the
-    // merchant account that owns the integration. The attendee email stays
-    // in EventoPlanners; Paynow authentication uses this configured email.
     ['authemail', config.integrationEmail],
     ['status', 'Message'],
   ];
@@ -109,27 +128,53 @@ export async function initiatePaynowTransaction({ reference, amount, title }) {
     throw new Error(`Paynow returned HTTP ${response.status}.`);
   }
 
-  // Paynow documents unsuccessful initiate responses as Status=Error&Error=...
-  // and those responses may not contain a hash. Surface that real message first
-  // instead of misreporting it as a response-hash failure.
   if (status === 'error') {
     throw new Error(paynowErrorMessage(parsed.data));
   }
 
-  // Successful responses must still be authenticated before using browserurl.
   if (!verifyPaynowMessage(parsed.entries, config.integrationKey)) {
     throw new Error('Paynow response hash validation failed. Check the Paynow integration key and response integrity.');
   }
 
-  if (status !== 'ok' || !parsed.data.browserurl) {
-    throw new Error(paynowErrorMessage(parsed.data));
+  if (status !== 'ok' || !parsed.data.browserurl || !parsed.data.pollurl) {
+    throw new Error('Paynow did not return the required checkout and poll URLs.');
   }
 
   return {
     redirectUrl: parsed.data.browserurl,
     paynowReference: parsed.data.paynowreference || null,
-    pollUrl: parsed.data.pollurl || null,
+    pollUrl: parsed.data.pollurl,
   };
+}
+
+export async function pollPaynowTransaction(pollUrl) {
+  const config = getPaynowConfig();
+  const trustedPollUrl = assertPaynowPollUrl(pollUrl);
+
+  const response = await fetch(trustedPollUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: '',
+    cache: 'no-store',
+  });
+
+  const rawResponse = await response.text();
+  const parsed = parsePaynowMessage(rawResponse);
+  const status = String(parsed.data.status || '').trim().toLowerCase();
+
+  if (!response.ok) {
+    throw new Error(`Paynow status check returned HTTP ${response.status}.`);
+  }
+
+  if (status === 'error') {
+    throw new Error(paynowErrorMessage(parsed.data));
+  }
+
+  if (!verifyPaynowMessage(parsed.entries, config.integrationKey)) {
+    throw new Error('Paynow status response hash validation failed.');
+  }
+
+  return parsed.data;
 }
 
 export function mapPaynowStatus(status) {

@@ -25,15 +25,15 @@ function statusPresentation(status) {
     return {
       icon: <XCircle size={48} className="text-red-600" />,
       title: 'Payment was not completed',
-      text: 'This payment attempt was not successful. Your registration remains available for another payment attempt.',
+      text: 'Paynow reports that this payment attempt was not successful. You can start another payment attempt from My registrations.',
       box: 'border-red-100 bg-red-50 text-red-700',
     };
   }
 
   return {
     icon: <Clock3 size={48} className="text-amber-500" />,
-    title: 'Waiting for payment confirmation',
-    text: 'We are waiting for Paynow to send the final transaction result. This page refreshes the status automatically.',
+    title: 'Payment still pending',
+    text: 'EventoPlanners can ask Paynow directly for the latest status. Use Check again if you have just completed payment.',
     box: 'border-amber-100 bg-amber-50 text-amber-700',
   };
 }
@@ -46,7 +46,7 @@ export default function PaymentReturnPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
 
-  const loadPayment = useCallback(async (manual = false) => {
+  const checkPayment = useCallback(async (manual = false) => {
     if (!reference) {
       setError('The payment reference is missing from the return URL.');
       setLoading(false);
@@ -56,11 +56,16 @@ export default function PaymentReturnPage() {
     if (manual) setRefreshing(true);
 
     try {
-      const response = await api.get(`/payments/${encodeURIComponent(reference)}`);
+      const response = await api.post(`/payments/${encodeURIComponent(reference)}/check`);
       setPayment(response.data.payment);
       setError('');
     } catch (requestError) {
-      setError(requestError.response?.data?.message || 'Unable to load the payment status.');
+      try {
+        const localResponse = await api.get(`/payments/${encodeURIComponent(reference)}`);
+        setPayment(localResponse.data.payment);
+      } catch {}
+
+      setError(requestError.response?.data?.message || 'Unable to check the payment with Paynow.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -68,15 +73,8 @@ export default function PaymentReturnPage() {
   }, [reference]);
 
   useEffect(() => {
-    loadPayment();
-  }, [loadPayment]);
-
-  useEffect(() => {
-    if (!payment || payment.status !== 'pending') return undefined;
-
-    const interval = window.setInterval(() => loadPayment(), 3000);
-    return () => window.clearInterval(interval);
-  }, [payment, loadPayment]);
+    checkPayment();
+  }, [checkPayment]);
 
   const presentation = statusPresentation(payment?.status);
 
@@ -101,10 +99,10 @@ export default function PaymentReturnPage() {
             <div className="flex min-h-64 items-center justify-center">
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600" />
             </div>
-          ) : error ? (
+          ) : !payment ? (
             <div className="mt-7 rounded-2xl border border-red-100 bg-red-50 p-5 text-red-700">
               <h1 className="text-xl font-bold">Unable to check payment</h1>
-              <p className="mt-2 text-sm">{error}</p>
+              <p className="mt-2 text-sm">{error || 'The payment could not be loaded.'}</p>
             </div>
           ) : (
             <>
@@ -113,6 +111,12 @@ export default function PaymentReturnPage() {
                 <h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">{presentation.title}</h1>
                 <p className="mt-3 max-w-xl leading-7 text-slate-500">{presentation.text}</p>
               </div>
+
+              {error && (
+                <div className="mt-5 rounded-2xl border border-amber-100 bg-amber-50 p-4 text-sm font-semibold text-amber-700">
+                  {error}
+                </div>
+              )}
 
               <div className={`mt-7 rounded-2xl border p-5 ${presentation.box}`}>
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -124,15 +128,15 @@ export default function PaymentReturnPage() {
               </div>
 
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                {payment.status === 'pending' && (
+                {payment.status !== 'paid' && payment.can_poll && (
                   <button
                     type="button"
-                    onClick={() => loadPayment(true)}
+                    onClick={() => checkPayment(true)}
                     disabled={refreshing}
                     className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
                   >
                     <RefreshCw size={18} className={refreshing ? 'animate-spin' : ''} />
-                    {refreshing ? 'Checking...' : 'Check again'}
+                    {refreshing ? 'Checking Paynow...' : 'Check again'}
                   </button>
                 )}
                 <Link to="/user/registrations" className="inline-flex flex-1 items-center justify-center rounded-xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 hover:bg-slate-50">

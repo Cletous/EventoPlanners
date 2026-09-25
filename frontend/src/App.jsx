@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminEventsPage from './pages/AdminEventsPage';
+import AdminPaymentsPage from './pages/AdminPaymentsPage';
 import DashboardPage from './pages/DashboardPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -60,6 +61,14 @@ function App() {
         element={(
           <ProtectedRoute roles={['admin']}>
             <AdminEventsPage />
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/admin/payments"
+        element={(
+          <ProtectedRoute roles={['admin']}>
+            <AdminPaymentsPage />
           </ProtectedRoute>
         )}
       />

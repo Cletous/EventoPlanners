@@ -8,6 +8,7 @@
     "start": "next start -p 3001",
     "lint": "eslint",
     "db:init": "node --env-file=.env.local scripts/init-db.js",
+    "db:migrate:paynow-poll": "node --env-file=.env.local scripts/add-payment-poll-url.js",
     "seed:admin": "node --env-file=.env.local scripts/create-admin.js"
   },
   "dependencies": {

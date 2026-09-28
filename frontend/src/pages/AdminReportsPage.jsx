@@ -305,7 +305,7 @@ export default function AdminReportsPage() {
   const events = report?.events || [];
   const registrations = report?.registrations || [];
   const payments = report?.payments || [];
-  const eventOptions = report?.event_options || [];
+  const eventOptions = useMemo(() => report?.event_options || [], [report?.event_options]);
 
   const selectedEvent = useMemo(
     () => eventOptions.find((event) => String(event.id) === String(appliedFilters.event_id)),

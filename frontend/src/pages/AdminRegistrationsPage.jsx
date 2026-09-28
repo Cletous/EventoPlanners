@@ -60,7 +60,11 @@ export default function AdminRegistrationsPage() {
     }
   };
 
-  useEffect(() => { loadRegistrations('', ''); }, []);
+  useEffect(() => {
+    loadRegistrations('', '');
+    // Initial load only; filters are applied explicitly by the user.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const totals = useMemo(() => ({
     confirmed: registrations.filter((item) => item.status === 'confirmed').length,

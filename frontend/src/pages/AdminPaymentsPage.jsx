@@ -40,7 +40,11 @@ export default function AdminPaymentsPage() {
     }
   };
 
-  useEffect(() => { loadPayments('', ''); }, []);
+  useEffect(() => {
+    loadPayments('', '');
+    // Initial load only; filters are applied explicitly by the user.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const checkPayment = async (payment) => {
     setChecking(payment.reference);

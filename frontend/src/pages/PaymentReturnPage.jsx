@@ -63,7 +63,11 @@ export default function PaymentReturnPage() {
       try {
         const localResponse = await api.get(`/payments/${encodeURIComponent(reference)}`);
         setPayment(localResponse.data.payment);
-      } catch {}
+      } catch (localError) {
+        // The Paynow check failed and the local payment lookup also failed.
+        // Preserve the primary Paynow error below while satisfying linting.
+        void localError;
+      }
 
       setError(requestError.response?.data?.message || 'Unable to check the payment with Paynow.');
     } finally {

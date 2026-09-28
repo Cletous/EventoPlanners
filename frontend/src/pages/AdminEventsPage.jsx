@@ -91,6 +91,8 @@ export default function AdminEventsPage() {
 
   useEffect(() => {
     loadEvents('');
+    // Initial load only; later reloads are triggered explicitly by search and CRUD actions.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const showMessage = (type, text) => {

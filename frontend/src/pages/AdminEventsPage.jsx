@@ -11,7 +11,7 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import AppShell from '../components/AppShell';
 import ConfirmDialog from '../components/ConfirmDialog';
 import EventFormModal from '../components/EventFormModal';
@@ -42,6 +42,26 @@ function formatTime(value) {
 }
 
 function EventDetails({ event, onClose }) {
+  const closeButtonRef = useRef(null);
+
+  useEffect(() => {
+    if (!event) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (keyboardEvent) => {
+      if (keyboardEvent.key === 'Escape') onClose?.();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [event, onClose]);
+
   if (!event) return null;
 
   const registrationCount = Number(event.registration_count || 0);
@@ -70,6 +90,7 @@ function EventDetails({ event, onClose }) {
             </h2>
           </div>
           <button
+            ref={closeButtonRef}
             type="button"
             onClick={onClose}
             className="rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100 dark:hover:bg-slate-800 dark:hover:text-white dark:focus-visible:ring-indigo-500/20"

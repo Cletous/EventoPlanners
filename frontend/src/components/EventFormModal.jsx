@@ -1,5 +1,5 @@
 import { AlertCircle, CalendarDays, Image, MapPin, Save, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const emptyForm = {
   title: '',
@@ -36,6 +36,7 @@ function FieldError({ children }) {
 export default function EventFormModal({ open, event, busy, serverErrors = {}, onClose, onSubmit }) {
   const [form, setForm] = useState(emptyForm);
   const [clientErrors, setClientErrors] = useState({});
+  const titleInputRef = useRef(null);
 
   useEffect(() => {
     if (open) {
@@ -43,6 +44,24 @@ export default function EventFormModal({ open, event, busy, serverErrors = {}, o
       setClientErrors({});
     }
   }, [open, event]);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.setTimeout(() => titleInputRef.current?.focus(), 0);
+
+    const handleKeyDown = (keyboardEvent) => {
+      if (keyboardEvent.key === 'Escape' && !busy) onClose?.();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open, busy, onClose]);
 
   if (!open) return null;
 
@@ -83,7 +102,7 @@ export default function EventFormModal({ open, event, busy, serverErrors = {}, o
   const labelClass = 'text-sm font-bold text-slate-700 dark:text-slate-200';
 
   return (
-    <div className="fixed inset-0 z-[70] overflow-y-auto bg-slate-950/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="event-form-title">
+    <div className="fixed inset-0 z-[70] overflow-y-auto bg-slate-950/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="event-form-title" onMouseDown={(mouseEvent) => { if (mouseEvent.target === mouseEvent.currentTarget && !busy) onClose?.(); }}>
       <div className="mx-auto my-4 w-full max-w-3xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900 sm:my-8">
         <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-5 dark:border-slate-700 sm:px-8 sm:py-6">
           <div>
@@ -99,7 +118,7 @@ export default function EventFormModal({ open, event, busy, serverErrors = {}, o
         <form onSubmit={handleSubmit} className="grid gap-5 p-6 sm:grid-cols-2 sm:p-8">
           <label className={`sm:col-span-2 ${labelClass}`}>
             Event title *
-            <input value={form.title} onChange={(e) => setField('title', e.target.value)} maxLength={150} className={fieldClass} placeholder="e.g. Software Engineering Research Symposium" />
+            <input ref={titleInputRef} value={form.title} onChange={(e) => setField('title', e.target.value)} maxLength={150} className={fieldClass} placeholder="e.g. Software Engineering Research Symposium" />
             <FieldError>{errors.title}</FieldError>
           </label>
 

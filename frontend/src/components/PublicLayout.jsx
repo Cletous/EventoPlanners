@@ -28,6 +28,7 @@ export default function PublicLayout({ children, authPage = false }) {
 
   return (
     <div className={dark ? 'dark' : ''}>
+      <a href="#main-content" className="fixed left-4 top-3 z-[100] -translate-y-20 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-lg transition focus:translate-y-0 focus:outline-none focus:ring-4 focus:ring-indigo-200 dark:focus:ring-indigo-500/30">Skip to main content</a>
       <div className="min-h-screen overflow-hidden bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
         <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
           <div className="absolute -left-28 -top-28 h-80 w-80 rounded-full bg-indigo-200/45 blur-3xl dark:bg-indigo-600/10" />
@@ -81,7 +82,7 @@ export default function PublicLayout({ children, authPage = false }) {
           </div>
         </header>
 
-        <main className="relative z-10">{children}</main>
+        <main id="main-content" tabIndex="-1" className="relative z-10 outline-none">{children}</main>
       </div>
     </div>
   );

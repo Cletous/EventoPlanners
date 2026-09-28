@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { LoadingState } from './ui/Feedback';
 
 export default function ProtectedRoute({ children, roles = [] }) {
   const { user, isLoading } = useAuth();
@@ -7,8 +8,10 @@ export default function ProtectedRoute({ children, roles = [] }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="h-9 w-9 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600" />
+      <div className="min-h-screen bg-slate-50 p-4 dark:bg-slate-950 sm:p-6" role="status" aria-live="polite">
+        <div className="mx-auto max-w-3xl pt-20">
+          <LoadingState label="Restoring your session..." />
+        </div>
       </div>
     );
   }

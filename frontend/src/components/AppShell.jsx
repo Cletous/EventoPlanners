@@ -176,11 +176,29 @@ export default function AppShell({ children, role }) {
     setMobileOpen(false);
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (!mobileOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setMobileOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileOpen]);
+
   const dark = theme === 'dark';
   const title = routeTitle(location.pathname, role);
 
   return (
     <div className={dark ? 'dark' : ''}>
+      <a href="#main-content" className="fixed left-4 top-3 z-[100] -translate-y-20 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-lg transition focus:translate-y-0 focus:outline-none focus:ring-4 focus:ring-indigo-200 dark:focus:ring-indigo-500/30">Skip to main content</a>
       <div className="min-h-screen bg-slate-100 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
         <aside className={`fixed inset-y-0 left-0 z-40 hidden border-r border-slate-200/80 shadow-sm transition-[width] duration-200 dark:border-slate-800 lg:block ${collapsed ? 'w-20' : 'w-64'}`}>
           <SidebarContent role={role} collapsed={collapsed} onToggleCollapse={() => setCollapsed((value) => !value)} />
@@ -222,7 +240,7 @@ export default function AppShell({ children, role }) {
               </button>
 
               <div className="min-w-0 flex-1 lg:hidden">
-                <Logo compact />
+                <Logo compact showTagline={false} className="[&>div:last-child]:hidden sm:[&>div:last-child]:block" />
               </div>
 
               <div className="hidden min-w-0 flex-1 lg:block">
@@ -256,7 +274,7 @@ export default function AppShell({ children, role }) {
             </div>
           </header>
 
-          <main className="min-h-[calc(100vh-76px)]">
+          <main id="main-content" tabIndex="-1" className="min-h-[calc(100vh-76px)] outline-none">
             <div className="mx-auto w-full max-w-[1560px] px-4 py-5 sm:px-6 sm:py-7 xl:px-8 xl:py-8">
               {children}
             </div>

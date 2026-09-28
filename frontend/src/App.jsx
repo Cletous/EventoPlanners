@@ -17,7 +17,7 @@ const UserRegistrationsPage = lazy(() => import('./pages/UserRegistrationsPage')
 
 function RouteLoadingFallback() {
   return (
-    <div className="min-h-screen bg-slate-50 p-4 dark:bg-slate-950 sm:p-6">
+    <div className="min-h-screen bg-slate-50 p-4 text-slate-900 dark:bg-slate-950 dark:text-slate-100 sm:p-6" role="status" aria-live="polite">
       <div className="mx-auto max-w-3xl pt-20">
         <LoadingState label="Loading page..." />
       </div>

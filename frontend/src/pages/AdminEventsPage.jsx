@@ -434,7 +434,7 @@ export default function AdminEventsPage() {
                       <th className="border-b border-slate-200 bg-slate-50 px-5 py-3.5 dark:border-slate-800 dark:bg-slate-950">Fee / Capacity</th>
                       <th className="border-b border-slate-200 bg-slate-50 px-5 py-3.5 dark:border-slate-800 dark:bg-slate-950">Status</th>
                       <th className="border-b border-slate-200 bg-slate-50 px-5 py-3.5 text-center dark:border-slate-800 dark:bg-slate-950">Registrations</th>
-                      <th className="sticky right-0 z-20 min-w-[245px] border-b border-l border-slate-200 bg-slate-50 px-5 py-3.5 text-right dark:border-slate-800 dark:bg-slate-950">Actions</th>
+                      <th className="min-w-[245px] border-b border-l border-slate-200 bg-slate-50 px-5 py-3.5 text-right dark:border-slate-800 dark:bg-slate-950">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -472,7 +472,7 @@ export default function AdminEventsPage() {
                           <td className="border-b border-slate-100 px-5 py-4 text-center dark:border-slate-800">
                             <span className="inline-flex min-w-10 items-center justify-center rounded-xl bg-slate-100 px-2.5 py-1.5 text-sm font-black text-slate-700 dark:bg-slate-800 dark:text-slate-200">{registrationCount}</span>
                           </td>
-                          <td className="sticky right-0 z-10 border-b border-l border-slate-100 bg-white px-5 py-4 transition group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800/80">
+                          <td className="border-b border-l border-slate-100 bg-white px-5 py-4 transition group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800/80">
                             <div className="flex justify-end gap-2">
                               <button type="button" onClick={() => setViewingEvent(event)} title="View event" aria-label={`View ${event.title}`} className="rounded-xl border border-slate-200 p-2 text-slate-600 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100 dark:border-slate-700 dark:text-slate-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-300 dark:focus-visible:ring-indigo-500/20"><Eye size={17} /></button>
                               <button type="button" onClick={() => openEdit(event)} title="Edit event" aria-label={`Edit ${event.title}`} className="rounded-xl border border-slate-200 p-2 text-slate-600 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100 dark:border-slate-700 dark:text-slate-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-300 dark:focus-visible:ring-indigo-500/20"><Edit3 size={17} /></button>

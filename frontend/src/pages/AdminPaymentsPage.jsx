@@ -452,7 +452,7 @@ export default function AdminPaymentsPage() {
                       <th className="min-w-[160px] border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Registration</th>
                       <th className="min-w-[120px] border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Status</th>
                       <th className="min-w-[190px] border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Created</th>
-                      <th className="sticky right-0 z-20 min-w-[170px] border-b border-l border-slate-200 bg-slate-50 px-5 py-4 text-right dark:border-slate-800 dark:bg-slate-950">Action</th>
+                      <th className="min-w-[170px] border-b border-l border-slate-200 bg-slate-50 px-5 py-4 text-right dark:border-slate-800 dark:bg-slate-950">Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -492,7 +492,7 @@ export default function AdminPaymentsPage() {
                         <td className="border-b border-slate-100 px-5 py-4 text-slate-500 transition group-hover:bg-slate-50/70 dark:border-slate-800 dark:text-slate-400 dark:group-hover:bg-slate-800/40">
                           {formatDateTime(payment.created_at)}
                         </td>
-                        <td className="sticky right-0 z-10 border-b border-l border-slate-100 bg-white px-5 py-4 text-right transition group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800/80">
+                        <td className="border-b border-l border-slate-100 bg-white px-5 py-4 text-right transition group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800/80">
                           <PaymentAction payment={payment} checking={checking} onCheck={checkPayment} />
                         </td>
                       </tr>

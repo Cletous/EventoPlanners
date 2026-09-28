@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import api from '../services/api';
 
 const AuthContext = createContext(null);
@@ -31,31 +31,31 @@ export function AuthProvider({ children }) {
     restoreSession();
   }, []);
 
-  const completeAuthentication = ({ token, user: authenticatedUser }) => {
+  const completeAuthentication = useCallback(({ token, user: authenticatedUser }) => {
     localStorage.setItem(TOKEN_KEY, token);
     setUser(authenticatedUser);
-  };
+  }, []);
 
-  const login = async (credentials) => {
+  const login = useCallback(async (credentials) => {
     const response = await api.post('/auth/login', credentials);
     completeAuthentication(response.data);
     return response.data.user;
-  };
+  }, [completeAuthentication]);
 
-  const register = async (details) => {
+  const register = useCallback(async (details) => {
     const response = await api.post('/auth/register', details);
     completeAuthentication(response.data);
     return response.data.user;
-  };
+  }, [completeAuthentication]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
     setUser(null);
-  };
+  }, []);
 
   const value = useMemo(
     () => ({ user, isLoading, login, register, logout }),
-    [user, isLoading],
+    [user, isLoading, login, register, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'coverage']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -16,6 +16,28 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
+    },
+    rules: {
+      // EventoPlanners uses effects for initial API loads and modal state synchronisation.
+      // These are intentional lifecycle operations rather than derived-state calculations.
+      'react-hooks/set-state-in-effect': 'off',
+    },
+  },
+  {
+    files: ['**/__tests__/**/*.{js,jsx}', '**/*.{test,spec}.{js,jsx}', 'src/setupTests.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.jest,
+        ...globals.node,
+      },
+    },
+  },
+  {
+    files: ['src/context/AuthContext.jsx'],
+    rules: {
+      // The provider and its matching hook intentionally live together as one context module.
+      'react-refresh/only-export-components': 'off',
     },
   },
 ])

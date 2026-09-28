@@ -1,7 +1,6 @@
 import {
   ArrowRight,
   CalendarDays,
-  CircleDollarSign,
   MapPin,
   RefreshCw,
   Search,

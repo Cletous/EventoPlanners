@@ -8,6 +8,7 @@ const AdminEventsPage = lazy(() => import('./pages/AdminEventsPage'));
 const AdminPaymentsPage = lazy(() => import('./pages/AdminPaymentsPage'));
 const AdminRegistrationsPage = lazy(() => import('./pages/AdminRegistrationsPage'));
 const AdminReportsPage = lazy(() => import('./pages/AdminReportsPage'));
+const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const HomePage = lazy(() => import('./pages/HomePage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -43,6 +44,7 @@ function App() {
         <Route path="/admin/registrations" element={<ProtectedRoute roles={['admin']}><AdminRegistrationsPage /></ProtectedRoute>} />
         <Route path="/admin/payments" element={<ProtectedRoute roles={['admin']}><AdminPaymentsPage /></ProtectedRoute>} />
         <Route path="/admin/reports" element={<ProtectedRoute roles={['admin']}><AdminReportsPage /></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute roles={['admin']}><AdminUsersPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>

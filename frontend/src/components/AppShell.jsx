@@ -12,6 +12,7 @@ import {
   Settings,
   Sun,
   TicketCheck,
+  UsersRound,
   X,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -27,6 +28,7 @@ const adminNavigation = [
   { label: 'Registrations', to: '/admin/registrations', icon: TicketCheck },
   { label: 'Payments', to: '/admin/payments', icon: CreditCard },
   { label: 'Reports', to: '/admin/reports', icon: FileBarChart },
+  { label: 'Users', to: '/admin/users', icon: UsersRound },
   { label: 'My account', to: '/account', icon: Settings },
 ];
 

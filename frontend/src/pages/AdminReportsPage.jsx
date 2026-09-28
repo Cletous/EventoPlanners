@@ -517,11 +517,11 @@ export default function AdminReportsPage() {
                   <div className="space-y-3 p-4 md:hidden">
                     {events.map((event) => <EventMobileCard key={event.id} event={event} />)}
                   </div>
-                  <div className="hidden overflow-x-auto md:block">
-                    <table className="w-full min-w-[1180px] text-left text-sm">
+                  <div className="relative isolate hidden overflow-x-auto overscroll-x-contain md:block">
+                    <table className="w-full min-w-[1180px] border-separate border-spacing-0 text-left text-sm">
                       <thead className="bg-slate-50 text-xs font-black uppercase tracking-wide text-slate-500 dark:bg-slate-950/60 dark:text-slate-400">
                         <tr>
-                          <th className="sticky left-0 z-20 min-w-[260px] border-r border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Event</th>
+                          <th className="sticky left-0 z-20 w-[260px] min-w-[260px] max-w-[260px] border-r border-slate-200 bg-slate-50 px-5 py-4 shadow-[6px_0_10px_-10px_rgba(15,23,42,0.35)] dark:border-slate-800 dark:bg-slate-950">Event</th>
                           <th className="px-5 py-4">Status</th>
                           <th className="px-5 py-4">Capacity</th>
                           <th className="px-5 py-4">Registrations</th>
@@ -539,7 +539,7 @@ export default function AdminReportsPage() {
                           const fillRate = Number(event.capacity || 0) > 0 ? ((active / Number(event.capacity)) * 100).toFixed(1) : '0.0';
                           return (
                             <tr key={event.id} className="group hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
-                              <td className="sticky left-0 z-10 border-r border-slate-200 bg-white px-5 py-4 group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800">
+                              <td className="sticky left-0 z-10 w-[260px] min-w-[260px] max-w-[260px] border-r border-slate-200 bg-white px-5 py-4 shadow-[6px_0_10px_-10px_rgba(15,23,42,0.35)] group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800">
                                 <p className="font-bold text-slate-950 dark:text-white">{event.title}</p>
                                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{event.venue} · {formatDate(event.event_date)}</p>
                               </td>
@@ -576,11 +576,11 @@ export default function AdminReportsPage() {
                   <div className="space-y-3 p-4 md:hidden">
                     {registrations.map((registration) => <RegistrationMobileCard key={registration.id} registration={registration} />)}
                   </div>
-                  <div className="hidden overflow-x-auto md:block">
-                    <table className="w-full min-w-[1120px] text-left text-sm">
+                  <div className="relative isolate hidden overflow-x-auto overscroll-x-contain md:block">
+                    <table className="w-full min-w-[1120px] border-separate border-spacing-0 text-left text-sm">
                       <thead className="bg-slate-50 text-xs font-black uppercase tracking-wide text-slate-500 dark:bg-slate-950/60 dark:text-slate-400">
                         <tr>
-                          <th className="sticky left-0 z-20 min-w-[240px] border-r border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Attendee</th>
+                          <th className="sticky left-0 z-20 w-[240px] min-w-[240px] max-w-[240px] border-r border-slate-200 bg-slate-50 px-5 py-4 shadow-[6px_0_10px_-10px_rgba(15,23,42,0.35)] dark:border-slate-800 dark:bg-slate-950">Attendee</th>
                           <th className="px-5 py-4">Event</th>
                           <th className="px-5 py-4">Status</th>
                           <th className="px-5 py-4">Fee</th>
@@ -592,7 +592,7 @@ export default function AdminReportsPage() {
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                         {registrations.map((registration) => (
                           <tr key={registration.id} className="group hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
-                            <td className="sticky left-0 z-10 border-r border-slate-200 bg-white px-5 py-4 group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800">
+                            <td className="sticky left-0 z-10 w-[240px] min-w-[240px] max-w-[240px] border-r border-slate-200 bg-white px-5 py-4 shadow-[6px_0_10px_-10px_rgba(15,23,42,0.35)] group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800">
                               <p className="font-bold text-slate-950 dark:text-white">{registration.user_name}</p>
                               <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{registration.user_email}</p>
                               <p className="mt-1 text-[11px] font-semibold text-slate-400 dark:text-slate-500">Registration #{registration.id}</p>
@@ -626,11 +626,11 @@ export default function AdminReportsPage() {
                   <div className="space-y-3 p-4 md:hidden">
                     {payments.map((payment) => <PaymentMobileCard key={payment.id} payment={payment} />)}
                   </div>
-                  <div className="hidden overflow-x-auto md:block">
-                    <table className="w-full min-w-[1260px] text-left text-sm">
+                  <div className="relative isolate hidden overflow-x-auto overscroll-x-contain md:block">
+                    <table className="w-full min-w-[1260px] border-separate border-spacing-0 text-left text-sm">
                       <thead className="bg-slate-50 text-xs font-black uppercase tracking-wide text-slate-500 dark:bg-slate-950/60 dark:text-slate-400">
                         <tr>
-                          <th className="sticky left-0 z-20 min-w-[240px] border-r border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Attendee</th>
+                          <th className="sticky left-0 z-20 w-[240px] min-w-[240px] max-w-[240px] border-r border-slate-200 bg-slate-50 px-5 py-4 shadow-[6px_0_10px_-10px_rgba(15,23,42,0.35)] dark:border-slate-800 dark:bg-slate-950">Attendee</th>
                           <th className="px-5 py-4">Event</th>
                           <th className="px-5 py-4">Reference</th>
                           <th className="px-5 py-4">Paynow reference</th>
@@ -642,7 +642,7 @@ export default function AdminReportsPage() {
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                         {payments.map((payment) => (
                           <tr key={payment.id} className="group hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
-                            <td className="sticky left-0 z-10 border-r border-slate-200 bg-white px-5 py-4 group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800">
+                            <td className="sticky left-0 z-10 w-[240px] min-w-[240px] max-w-[240px] border-r border-slate-200 bg-white px-5 py-4 shadow-[6px_0_10px_-10px_rgba(15,23,42,0.35)] group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800">
                               <p className="font-bold text-slate-950 dark:text-white">{payment.user_name}</p>
                               <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{payment.user_email}</p>
                               <p className="mt-1 text-[11px] font-semibold text-slate-400 dark:text-slate-500">Registration #{payment.registration_id}</p>

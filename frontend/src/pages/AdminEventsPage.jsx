@@ -423,18 +423,18 @@ export default function AdminEventsPage() {
             <>
               <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3 text-xs font-semibold text-slate-500 dark:border-slate-800 dark:text-slate-400 sm:px-6">
                 <span>{filteredEvents.length} event{filteredEvents.length === 1 ? '' : 's'} shown</span>
-                <span className="hidden sm:inline">Scroll horizontally to view all columns. Event and Actions stay pinned.</span>
+                <span className="hidden sm:inline">Scroll horizontally to view all columns. The Event column stays pinned.</span>
               </div>
-              <div className="overflow-x-auto overscroll-x-contain">
+              <div className="relative isolate overflow-x-auto overscroll-x-contain">
                 <table className="w-full min-w-[1080px] border-separate border-spacing-0 text-left">
                   <thead className="text-xs font-black uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
                     <tr>
-                      <th className="sticky left-0 z-20 min-w-[290px] border-b border-r border-slate-200 bg-slate-50 px-5 py-3.5 dark:border-slate-800 dark:bg-slate-950">Event</th>
+                      <th className="sticky left-0 z-20 w-[290px] min-w-[290px] max-w-[290px] border-b border-r border-slate-200 bg-slate-50 px-5 py-3.5 shadow-[6px_0_10px_-10px_rgba(15,23,42,0.35)] dark:border-slate-800 dark:bg-slate-950">Event</th>
                       <th className="border-b border-slate-200 bg-slate-50 px-5 py-3.5 dark:border-slate-800 dark:bg-slate-950">Schedule</th>
                       <th className="border-b border-slate-200 bg-slate-50 px-5 py-3.5 dark:border-slate-800 dark:bg-slate-950">Fee / Capacity</th>
                       <th className="border-b border-slate-200 bg-slate-50 px-5 py-3.5 dark:border-slate-800 dark:bg-slate-950">Status</th>
                       <th className="border-b border-slate-200 bg-slate-50 px-5 py-3.5 text-center dark:border-slate-800 dark:bg-slate-950">Registrations</th>
-                      <th className="min-w-[245px] border-b border-l border-slate-200 bg-slate-50 px-5 py-3.5 text-right dark:border-slate-800 dark:bg-slate-950">Actions</th>
+                      <th className="min-w-[245px] border-b border-slate-200 bg-slate-50 px-5 py-3.5 text-right dark:border-slate-800 dark:bg-slate-950">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -445,7 +445,7 @@ export default function AdminEventsPage() {
 
                       return (
                         <tr key={event.id} className="group">
-                          <td className="sticky left-0 z-10 border-b border-r border-slate-100 bg-white px-5 py-4 transition group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800/80">
+                          <td className="sticky left-0 z-10 w-[290px] min-w-[290px] max-w-[290px] border-b border-r border-slate-100 bg-white px-5 py-4 shadow-[6px_0_10px_-10px_rgba(15,23,42,0.35)] transition group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800/80">
                             <button type="button" onClick={() => setViewingEvent(event)} className="block max-w-[260px] text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100 dark:focus-visible:ring-indigo-500/20">
                               <p className="truncate font-black text-slate-950 transition group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-300">{event.title}</p>
                               <p className="mt-1.5 flex min-w-0 items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
@@ -472,7 +472,7 @@ export default function AdminEventsPage() {
                           <td className="border-b border-slate-100 px-5 py-4 text-center dark:border-slate-800">
                             <span className="inline-flex min-w-10 items-center justify-center rounded-xl bg-slate-100 px-2.5 py-1.5 text-sm font-black text-slate-700 dark:bg-slate-800 dark:text-slate-200">{registrationCount}</span>
                           </td>
-                          <td className="border-b border-l border-slate-100 bg-white px-5 py-4 transition group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800/80">
+                          <td className="border-b border-slate-100 px-5 py-4 transition group-hover:bg-slate-50/70 dark:border-slate-800 dark:group-hover:bg-slate-800/40">
                             <div className="flex justify-end gap-2">
                               <button type="button" onClick={() => setViewingEvent(event)} title="View event" aria-label={`View ${event.title}`} className="rounded-xl border border-slate-200 p-2 text-slate-600 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100 dark:border-slate-700 dark:text-slate-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-300 dark:focus-visible:ring-indigo-500/20"><Eye size={17} /></button>
                               <button type="button" onClick={() => openEdit(event)} title="Edit event" aria-label={`Edit ${event.title}`} className="rounded-xl border border-slate-200 p-2 text-slate-600 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100 dark:border-slate-700 dark:text-slate-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-300 dark:focus-visible:ring-indigo-500/20"><Edit3 size={17} /></button>

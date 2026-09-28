@@ -387,11 +387,11 @@ export default function AdminRegistrationsPage() {
                 ))}
               </div>
 
-              <div className="hidden overflow-x-auto md:block">
-                <table className="w-full min-w-[1280px] text-left text-sm">
+              <div className="relative isolate hidden overflow-x-auto overscroll-x-contain md:block">
+                <table className="w-full min-w-[1280px] border-separate border-spacing-0 text-left text-sm">
                   <thead className="bg-slate-50 text-[11px] font-black uppercase tracking-[0.12em] text-slate-500 dark:bg-slate-950/60 dark:text-slate-400">
                     <tr>
-                      <th className="sticky left-0 z-20 w-[260px] border-r border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Attendee</th>
+                      <th className="sticky left-0 z-20 w-[260px] min-w-[260px] max-w-[260px] border-r border-slate-200 bg-slate-50 px-5 py-4 shadow-[6px_0_10px_-10px_rgba(15,23,42,0.35)] dark:border-slate-800 dark:bg-slate-950">Attendee</th>
                       <th className="px-5 py-4">Event</th>
                       <th className="px-5 py-4">Registration</th>
                       <th className="px-5 py-4">Attempts</th>
@@ -402,7 +402,7 @@ export default function AdminRegistrationsPage() {
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {registrations.map((registration) => (
                       <tr key={registration.id} className="group align-top transition hover:bg-slate-50/80 dark:hover:bg-slate-800/35">
-                        <td className="sticky left-0 z-10 border-r border-slate-100 bg-white px-5 py-4 transition group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800">
+                        <td className="sticky left-0 z-10 w-[260px] min-w-[260px] max-w-[260px] border-r border-slate-100 bg-white px-5 py-4 shadow-[6px_0_10px_-10px_rgba(15,23,42,0.35)] transition group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800">
                           <div className="flex items-start gap-3">
                             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-sm font-black text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300">
                               {String(registration.user_name || 'U').charAt(0).toUpperCase()}

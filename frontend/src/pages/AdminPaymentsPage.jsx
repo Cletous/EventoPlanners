@@ -441,24 +441,24 @@ export default function AdminPaymentsPage() {
                 ))}
               </div>
 
-              <div className="hidden overflow-x-auto md:block">
+              <div className="relative isolate hidden overflow-x-auto overscroll-x-contain md:block">
                 <table className="w-full min-w-[1320px] border-separate border-spacing-0 text-sm">
                   <thead>
                     <tr className="text-left text-xs font-black uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
-                      <th className="sticky left-0 z-20 min-w-[230px] border-b border-r border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Attendee</th>
+                      <th className="sticky left-0 z-20 w-[230px] min-w-[230px] max-w-[230px] border-b border-r border-slate-200 bg-slate-50 px-5 py-4 shadow-[6px_0_10px_-10px_rgba(15,23,42,0.35)] dark:border-slate-800 dark:bg-slate-950">Attendee</th>
                       <th className="min-w-[240px] border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Event</th>
                       <th className="min-w-[120px] border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Amount</th>
                       <th className="min-w-[260px] border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Reference</th>
                       <th className="min-w-[160px] border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Registration</th>
                       <th className="min-w-[120px] border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Status</th>
                       <th className="min-w-[190px] border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Created</th>
-                      <th className="min-w-[170px] border-b border-l border-slate-200 bg-slate-50 px-5 py-4 text-right dark:border-slate-800 dark:bg-slate-950">Action</th>
+                      <th className="min-w-[170px] border-b border-slate-200 bg-slate-50 px-5 py-4 text-right dark:border-slate-800 dark:bg-slate-950">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {payments.map((payment) => (
                       <tr key={payment.id} className="group align-top">
-                        <td className="sticky left-0 z-10 border-b border-r border-slate-100 bg-white px-5 py-4 transition group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800/80">
+                        <td className="sticky left-0 z-10 w-[230px] min-w-[230px] max-w-[230px] border-b border-r border-slate-100 bg-white px-5 py-4 shadow-[6px_0_10px_-10px_rgba(15,23,42,0.35)] transition group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800/80">
                           <div className="flex items-start gap-3">
                             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300">
                               <UserRound size={17} />
@@ -492,7 +492,7 @@ export default function AdminPaymentsPage() {
                         <td className="border-b border-slate-100 px-5 py-4 text-slate-500 transition group-hover:bg-slate-50/70 dark:border-slate-800 dark:text-slate-400 dark:group-hover:bg-slate-800/40">
                           {formatDateTime(payment.created_at)}
                         </td>
-                        <td className="border-b border-l border-slate-100 bg-white px-5 py-4 text-right transition group-hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:bg-slate-800/80">
+                        <td className="border-b border-slate-100 px-5 py-4 text-right transition group-hover:bg-slate-50/70 dark:border-slate-800 dark:group-hover:bg-slate-800/40">
                           <PaymentAction payment={payment} checking={checking} onCheck={checkPayment} />
                         </td>
                       </tr>

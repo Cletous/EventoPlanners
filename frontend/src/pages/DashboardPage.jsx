@@ -1,5 +1,5 @@
-
 import {
+  ArrowRight,
   CalendarDays,
   CircleDollarSign,
   Clock3,
@@ -7,6 +7,7 @@ import {
   FileBarChart,
   Search,
   ShieldCheck,
+  Sparkles,
   TicketCheck,
   UserRound,
   Users,
@@ -35,42 +36,94 @@ function registrationStatusLabel(status) {
 }
 
 function registrationStatusClass(status) {
-  if (status === 'confirmed') return 'bg-green-50 text-green-700';
-  if (status === 'pending_payment') return 'bg-amber-50 text-amber-700';
-  return 'bg-slate-100 text-slate-600';
+  if (status === 'confirmed') return 'bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-300';
+  if (status === 'pending_payment') return 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300';
+  return 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300';
+}
+
+function Surface({ children, className = '' }) {
+  return (
+    <section className={`rounded-2xl border border-slate-200/90 bg-white shadow-sm shadow-slate-200/40 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none ${className}`}>
+      {children}
+    </section>
+  );
 }
 
 function SummaryCard({ icon, label, value, note }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <Surface className="group p-5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md dark:hover:border-slate-700">
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold text-slate-500">{label}</p>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">{value}</p>
-          {note && <p className="mt-2 text-xs leading-5 text-slate-500">{note}</p>}
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">{label}</p>
+          <p className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white">{value}</p>
+          {note && <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">{note}</p>}
         </div>
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100 transition group-hover:bg-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-300 dark:ring-indigo-500/20">
           {icon}
         </div>
       </div>
+    </Surface>
+  );
+}
+
+function BreakdownRow({ label, value, tone = 'neutral' }) {
+  const tones = {
+    success: 'bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-300',
+    warning: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300',
+    danger: 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-300',
+    neutral: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+  };
+
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-xl border border-slate-100 px-4 py-3 dark:border-slate-800">
+      <span className="text-sm font-medium text-slate-600 dark:text-slate-300">{label}</span>
+      <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${tones[tone]}`}>{value}</span>
     </div>
   );
 }
 
-function BreakdownRow({ label, value, className = 'bg-slate-100 text-slate-700' }) {
+function SectionHeading({ title, description, actionTo, actionLabel }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-xl border border-slate-100 px-4 py-3">
-      <span className="text-sm font-medium text-slate-600">{label}</span>
-      <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${className}`}>{value}</span>
+    <div className="flex items-start justify-between gap-4">
+      <div>
+        <h2 className="text-base font-bold text-slate-950 dark:text-white">{title}</h2>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{description}</p>
+      </div>
+      {actionTo && (
+        <Link to={actionTo} className="inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-indigo-600 transition hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">
+          {actionLabel}<ArrowRight size={15} />
+        </Link>
+      )}
     </div>
   );
 }
 
 function LoadingPanel() {
   return (
-    <div className="mt-8 flex min-h-48 items-center justify-center rounded-3xl border border-slate-200 bg-white">
-      <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600" />
-    </div>
+    <Surface className="mt-6 flex min-h-56 items-center justify-center">
+      <div className="text-center">
+        <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600 dark:border-indigo-500/20 dark:border-t-indigo-400" />
+        <p className="mt-4 text-sm font-medium text-slate-500 dark:text-slate-400">Loading dashboard...</p>
+      </div>
+    </Surface>
+  );
+}
+
+function QuickAction({ to, icon, title, description }) {
+  return (
+    <Link
+      to={to}
+      className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500/40"
+    >
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition group-hover:bg-indigo-50 group-hover:text-indigo-600 dark:bg-slate-800 dark:text-slate-300 dark:group-hover:bg-indigo-500/10 dark:group-hover:text-indigo-300">
+        {icon}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="font-bold text-slate-900 dark:text-white">{title}</p>
+        <p className="mt-0.5 truncate text-xs text-slate-500 dark:text-slate-400">{description}</p>
+      </div>
+      <ArrowRight size={17} className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-indigo-500 dark:text-slate-600" />
+    </Link>
   );
 }
 
@@ -91,9 +144,7 @@ export default function DashboardPage({ admin = false }) {
         const response = await api.get(endpoint);
         if (active) setDashboard(response.data.dashboard);
       } catch (requestError) {
-        if (active) {
-          setError(requestError.response?.data?.message || 'Unable to load dashboard information.');
-        }
+        if (active) setError(requestError.response?.data?.message || 'Unable to load dashboard information.');
       } finally {
         if (active) setLoading(false);
       }
@@ -109,184 +160,172 @@ export default function DashboardPage({ admin = false }) {
 
   return (
     <AppShell role={admin ? 'admin' : 'user'}>
-      <div className="mx-auto max-w-7xl">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
-              {admin ? <ShieldCheck size={24} /> : <UserRound size={24} />}
+      <div className="space-y-6">
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-600 to-violet-600 px-5 py-6 text-white shadow-lg shadow-indigo-900/10 sm:px-7 sm:py-7">
+          <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-20 left-1/3 h-52 w-52 rounded-full bg-violet-300/10 blur-3xl" />
+          <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-3xl">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] ring-1 ring-white/15">
+                {admin ? <ShieldCheck size={14} /> : <UserRound size={14} />}
+                {admin ? 'Administrator workspace' : 'Attendee workspace'}
+              </div>
+              <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Welcome back, {user.name}</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-indigo-100 sm:text-base">
+                {admin
+                  ? 'Monitor events, registrations, payments and reporting from one clear operational overview.'
+                  : 'Keep track of your registrations, payment progress and upcoming event activity.'}
+              </p>
             </div>
-            <div className="mt-5 flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl font-bold tracking-tight text-slate-950">Welcome, {user.name}</h1>
-              <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-violet-700">{user.role}</span>
+            <div className="hidden h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/15 sm:flex">
+              <Sparkles size={28} className="text-white" />
             </div>
-            <p className="mt-2 text-slate-500">
-              {admin
-                ? 'A live overview of EventoPlanners events, registrations and payment activity.'
-                : 'A live overview of your registrations, payments and upcoming confirmed events.'}
-            </p>
           </div>
-          <div className="rounded-2xl bg-white px-4 py-3 text-sm shadow-sm ring-1 ring-slate-200">
-            <p className="font-semibold text-slate-900">{user.email}</p>
-            <p className="mt-0.5 text-xs text-slate-500">{admin ? 'Administrator area' : 'Attendee area'}</p>
-          </div>
-        </div>
+        </section>
 
         {error && (
-          <div className="mt-6 rounded-2xl border border-red-100 bg-red-50 p-4 text-sm font-semibold text-red-700">
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
             {error}
           </div>
         )}
 
         {loading ? <LoadingPanel /> : (
           <>
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {admin ? (
+                <>
+                  <SummaryCard icon={<CalendarDays size={21} />} label="Total events" value={adminEvents.total || 0} note={`${adminEvents.upcoming || 0} upcoming published`} />
+                  <SummaryCard icon={<Users size={21} />} label="Registrations" value={registrations.total || 0} note={`${registrations.confirmed || 0} confirmed`} />
+                  <SummaryCard icon={<CreditCard size={21} />} label="Payment attempts" value={payments.total || 0} note={`${payments.pending || 0} currently pending`} />
+                  <SummaryCard icon={<CircleDollarSign size={21} />} label="Successful payments" value={formatMoney(payments.paid_amount)} note={`${payments.paid || 0} paid attempts`} />
+                </>
+              ) : (
+                <>
+                  <SummaryCard icon={<TicketCheck size={21} />} label="My registrations" value={registrations.total || 0} note={`${registrations.confirmed || 0} confirmed`} />
+                  <SummaryCard icon={<Clock3 size={21} />} label="Pending payment" value={registrations.pending_payment || 0} note="Registrations still awaiting payment" />
+                  <SummaryCard icon={<WalletCards size={21} />} label="Payment attempts" value={payments.total || 0} note={`${payments.paid || 0} successful`} />
+                  <SummaryCard icon={<CircleDollarSign size={21} />} label="Amount paid" value={formatMoney(payments.paid_amount)} note="Total successful payment value" />
+                </>
+              )}
+            </div>
+
             {admin ? (
               <>
-                <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  <SummaryCard icon={<CalendarDays size={22} />} label="Total events" value={adminEvents.total || 0} note={`${adminEvents.upcoming || 0} upcoming published`} />
-                  <SummaryCard icon={<Users size={22} />} label="Registrations" value={registrations.total || 0} note={`${registrations.confirmed || 0} confirmed`} />
-                  <SummaryCard icon={<CreditCard size={22} />} label="Payment attempts" value={payments.total || 0} note={`${payments.pending || 0} currently pending`} />
-                  <SummaryCard icon={<CircleDollarSign size={22} />} label="Successful payments" value={formatMoney(payments.paid_amount)} note={`${payments.paid || 0} paid attempts`} />
-                </div>
-
-                <div className="mt-6 grid gap-6 lg:grid-cols-3">
-                  <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h2 className="font-bold text-slate-950">Event status</h2>
-                    <p className="mt-1 text-sm text-slate-500">Current event catalogue breakdown.</p>
+                <div className="grid gap-5 xl:grid-cols-3">
+                  <Surface className="p-5">
+                    <SectionHeading title="Event status" description="Current event catalogue breakdown." />
                     <div className="mt-5 space-y-2.5">
-                      <BreakdownRow label="Published" value={adminEvents.published || 0} className="bg-green-50 text-green-700" />
-                      <BreakdownRow label="Draft" value={adminEvents.draft || 0} className="bg-amber-50 text-amber-700" />
+                      <BreakdownRow label="Published" value={adminEvents.published || 0} tone="success" />
+                      <BreakdownRow label="Draft" value={adminEvents.draft || 0} tone="warning" />
                       <BreakdownRow label="Closed" value={adminEvents.closed || 0} />
                     </div>
-                  </section>
-
-                  <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h2 className="font-bold text-slate-950">Registration status</h2>
-                    <p className="mt-1 text-sm text-slate-500">All attendee registrations.</p>
+                  </Surface>
+                  <Surface className="p-5">
+                    <SectionHeading title="Registration status" description="All attendee registrations." />
                     <div className="mt-5 space-y-2.5">
-                      <BreakdownRow label="Confirmed" value={registrations.confirmed || 0} className="bg-green-50 text-green-700" />
-                      <BreakdownRow label="Pending payment" value={registrations.pending_payment || 0} className="bg-amber-50 text-amber-700" />
+                      <BreakdownRow label="Confirmed" value={registrations.confirmed || 0} tone="success" />
+                      <BreakdownRow label="Pending payment" value={registrations.pending_payment || 0} tone="warning" />
                       <BreakdownRow label="Cancelled" value={registrations.cancelled || 0} />
                     </div>
-                  </section>
-
-                  <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h2 className="font-bold text-slate-950">Payment status</h2>
-                    <p className="mt-1 text-sm text-slate-500">All payment attempts recorded.</p>
+                  </Surface>
+                  <Surface className="p-5">
+                    <SectionHeading title="Payment status" description="All payment attempts recorded." />
                     <div className="mt-5 space-y-2.5">
-                      <BreakdownRow label="Paid" value={payments.paid || 0} className="bg-green-50 text-green-700" />
-                      <BreakdownRow label="Pending" value={payments.pending || 0} className="bg-amber-50 text-amber-700" />
-                      <BreakdownRow label="Failed" value={payments.failed || 0} className="bg-red-50 text-red-700" />
+                      <BreakdownRow label="Paid" value={payments.paid || 0} tone="success" />
+                      <BreakdownRow label="Pending" value={payments.pending || 0} tone="warning" />
+                      <BreakdownRow label="Failed" value={payments.failed || 0} tone="danger" />
                     </div>
-                  </section>
+                  </Surface>
                 </div>
 
-                <div className="mt-6 grid gap-6 lg:grid-cols-2">
-                  <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <div className="flex items-center justify-between gap-4">
-                      <div><h2 className="font-bold text-slate-950">Recent registrations</h2><p className="mt-1 text-sm text-slate-500">The five newest registrations.</p></div>
-                      <Link to="/admin/registrations" className="text-sm font-bold text-indigo-600 hover:text-indigo-700">View all →</Link>
-                    </div>
+                <div className="grid gap-5 xl:grid-cols-2">
+                  <Surface className="p-5">
+                    <SectionHeading title="Recent registrations" description="The five newest registrations." actionTo="/admin/registrations" actionLabel="View all" />
                     <div className="mt-5 space-y-3">
                       {(dashboard?.recent_registrations || []).length === 0 ? (
-                        <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">No registrations yet.</p>
+                        <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500 dark:bg-slate-800/70 dark:text-slate-400">No registrations yet.</p>
                       ) : dashboard.recent_registrations.map((registration) => (
-                        <div key={registration.id} className="rounded-2xl border border-slate-100 p-4">
-                          <div className="flex items-start justify-between gap-4">
-                            <div><p className="font-semibold text-slate-900">{registration.user_name}</p><p className="mt-1 text-sm text-slate-500">{registration.event_title}</p></div>
-                            <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${registrationStatusClass(registration.status)}`}>{registrationStatusLabel(registration.status)}</span>
-                          </div>
-                          <p className="mt-2 text-xs text-slate-400">Registered {formatDate(registration.created_at)}</p>
+                        <div key={registration.id} className="flex items-start justify-between gap-4 rounded-xl border border-slate-100 p-4 dark:border-slate-800">
+                          <div className="min-w-0"><p className="truncate font-semibold text-slate-900 dark:text-white">{registration.user_name}</p><p className="mt-1 truncate text-sm text-slate-500 dark:text-slate-400">{registration.event_title}</p><p className="mt-2 text-xs text-slate-400 dark:text-slate-500">Registered {formatDate(registration.created_at)}</p></div>
+                          <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-bold ${registrationStatusClass(registration.status)}`}>{registrationStatusLabel(registration.status)}</span>
                         </div>
                       ))}
                     </div>
-                  </section>
+                  </Surface>
 
-                  <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <div className="flex items-center justify-between gap-4">
-                      <div><h2 className="font-bold text-slate-950">Upcoming published events</h2><p className="mt-1 text-sm text-slate-500">Nearest events still accepting registrations.</p></div>
-                      <Link to="/admin/events" className="text-sm font-bold text-indigo-600 hover:text-indigo-700">Manage →</Link>
-                    </div>
+                  <Surface className="p-5">
+                    <SectionHeading title="Upcoming published events" description="Nearest events still accepting registrations." actionTo="/admin/events" actionLabel="Manage" />
                     <div className="mt-5 space-y-3">
                       {(dashboard?.upcoming_events || []).length === 0 ? (
-                        <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">No upcoming published events.</p>
+                        <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500 dark:bg-slate-800/70 dark:text-slate-400">No upcoming published events.</p>
                       ) : dashboard.upcoming_events.map((event) => (
-                        <div key={event.id} className="rounded-2xl border border-slate-100 p-4">
-                          <div className="flex items-start justify-between gap-4"><div><p className="font-semibold text-slate-900">{event.title}</p><p className="mt-1 text-sm text-slate-500">{event.venue}</p></div><span className="text-xs font-bold text-indigo-600">{formatDate(event.event_date)}</span></div>
-                          <p className="mt-2 text-xs text-slate-500">{Number(event.registration_count || 0)} of {Number(event.capacity || 0)} places registered</p>
+                        <div key={event.id} className="rounded-xl border border-slate-100 p-4 dark:border-slate-800">
+                          <div className="flex items-start justify-between gap-4"><div className="min-w-0"><p className="truncate font-semibold text-slate-900 dark:text-white">{event.title}</p><p className="mt-1 truncate text-sm text-slate-500 dark:text-slate-400">{event.venue}</p></div><span className="shrink-0 text-xs font-bold text-indigo-600 dark:text-indigo-400">{formatDate(event.event_date)}</span></div>
+                          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{Number(event.registration_count || 0)} of {Number(event.capacity || 0)} places registered</p>
                         </div>
                       ))}
                     </div>
-                  </section>
+                  </Surface>
                 </div>
               </>
             ) : (
-              <>
-                <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  <SummaryCard icon={<TicketCheck size={22} />} label="My registrations" value={registrations.total || 0} note={`${registrations.confirmed || 0} confirmed`} />
-                  <SummaryCard icon={<Clock3 size={22} />} label="Pending payment" value={registrations.pending_payment || 0} note="Registrations still awaiting successful payment" />
-                  <SummaryCard icon={<WalletCards size={22} />} label="Payment attempts" value={payments.total || 0} note={`${payments.paid || 0} successful`} />
-                  <SummaryCard icon={<CircleDollarSign size={22} />} label="Amount paid" value={formatMoney(payments.paid_amount)} note="Total of successful payment attempts" />
-                </div>
+              <div className="grid gap-5 xl:grid-cols-2">
+                <Surface className="p-5">
+                  <SectionHeading title="Upcoming confirmed events" description="Your next confirmed event registrations." actionTo="/user/registrations" actionLabel="View all" />
+                  <div className="mt-5 space-y-3">
+                    {(dashboard?.upcoming_registrations || []).length === 0 ? (
+                      <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500 dark:bg-slate-800/70 dark:text-slate-400">You do not have an upcoming confirmed event yet.</p>
+                    ) : dashboard.upcoming_registrations.map((registration) => (
+                      <div key={registration.registration_id} className="rounded-xl border border-slate-100 p-4 dark:border-slate-800">
+                        <div className="flex items-start justify-between gap-4"><div className="min-w-0"><p className="truncate font-semibold text-slate-900 dark:text-white">{registration.title}</p><p className="mt-1 truncate text-sm text-slate-500 dark:text-slate-400">{registration.venue}</p></div><span className="shrink-0 text-xs font-bold text-indigo-600 dark:text-indigo-400">{formatDate(registration.event_date)}</span></div>
+                        <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">Starts at {String(registration.start_time || '').slice(0, 5)}</p>
+                      </div>
+                    ))}
+                  </div>
+                </Surface>
 
-                <div className="mt-6 grid gap-6 lg:grid-cols-2">
-                  <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <div className="flex items-center justify-between gap-4">
-                      <div><h2 className="font-bold text-slate-950">Upcoming confirmed events</h2><p className="mt-1 text-sm text-slate-500">Your next confirmed event registrations.</p></div>
-                      <Link to="/user/registrations" className="text-sm font-bold text-indigo-600 hover:text-indigo-700">View all →</Link>
-                    </div>
-                    <div className="mt-5 space-y-3">
-                      {(dashboard?.upcoming_registrations || []).length === 0 ? (
-                        <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">You do not have an upcoming confirmed event yet.</p>
-                      ) : dashboard.upcoming_registrations.map((registration) => (
-                        <div key={registration.registration_id} className="rounded-2xl border border-slate-100 p-4">
-                          <div className="flex items-start justify-between gap-4"><div><p className="font-semibold text-slate-900">{registration.title}</p><p className="mt-1 text-sm text-slate-500">{registration.venue}</p></div><span className="text-xs font-bold text-indigo-600">{formatDate(registration.event_date)}</span></div>
-                          <p className="mt-2 text-xs text-slate-500">Starts at {String(registration.start_time || '').slice(0, 5)}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-
-                  <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <div className="flex items-center justify-between gap-4">
-                      <div><h2 className="font-bold text-slate-950">Needs your attention</h2><p className="mt-1 text-sm text-slate-500">Registrations that still need payment.</p></div>
-                      <Link to="/user/registrations" className="text-sm font-bold text-indigo-600 hover:text-indigo-700">Open payments →</Link>
-                    </div>
-                    <div className="mt-5 space-y-3">
-                      {(dashboard?.pending_registrations || []).length === 0 ? (
-                        <p className="rounded-xl bg-green-50 p-4 text-sm font-medium text-green-700">No pending registration payments.</p>
-                      ) : dashboard.pending_registrations.map((registration) => (
-                        <div key={registration.registration_id} className="rounded-2xl border border-amber-100 bg-amber-50/50 p-4">
-                          <div className="flex items-start justify-between gap-4"><div><p className="font-semibold text-slate-900">{registration.title}</p><p className="mt-1 text-sm text-slate-500">{formatDate(registration.event_date)}</p></div><span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-700">{formatMoney(registration.registration_fee)}</span></div>
-                          <p className="mt-2 text-xs text-slate-500">Latest payment: {registration.latest_payment_status || 'No attempt yet'}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                </div>
-              </>
+                <Surface className="p-5">
+                  <SectionHeading title="Needs your attention" description="Registrations that still need payment." actionTo="/user/registrations" actionLabel="Open payments" />
+                  <div className="mt-5 space-y-3">
+                    {(dashboard?.pending_registrations || []).length === 0 ? (
+                      <p className="rounded-xl bg-green-50 p-4 text-sm font-medium text-green-700 dark:bg-green-500/10 dark:text-green-300">No pending registration payments.</p>
+                    ) : dashboard.pending_registrations.map((registration) => (
+                      <div key={registration.registration_id} className="rounded-xl border border-amber-100 bg-amber-50/50 p-4 dark:border-amber-500/20 dark:bg-amber-500/5">
+                        <div className="flex items-start justify-between gap-4"><div className="min-w-0"><p className="truncate font-semibold text-slate-900 dark:text-white">{registration.title}</p><p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{formatDate(registration.event_date)}</p></div><span className="shrink-0 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">{formatMoney(registration.registration_fee)}</span></div>
+                        <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">Latest payment: {registration.latest_payment_status || 'No attempt yet'}</p>
+                      </div>
+                    ))}
+                  </div>
+                </Surface>
+              </div>
             )}
           </>
         )}
 
-        <section className="mt-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="font-bold text-slate-950">Quick actions</h2>
-          <p className="mt-1 text-sm text-slate-500">Open the main areas you use most often.</p>
-          {admin ? (
-            <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Link to="/admin/events" className="flex items-center justify-between gap-4 rounded-2xl border border-indigo-100 bg-indigo-50 p-5 hover:bg-indigo-100/70"><div className="flex items-center gap-3"><CalendarDays className="text-indigo-600" size={21} /><span className="font-bold text-slate-900">Manage events</span></div><span className="font-bold text-indigo-700">→</span></Link>
-              <Link to="/admin/registrations" className="flex items-center justify-between gap-4 rounded-2xl border border-sky-100 bg-sky-50 p-5 hover:bg-sky-100/70"><div className="flex items-center gap-3"><TicketCheck className="text-sky-600" size={21} /><span className="font-bold text-slate-900">Registrations</span></div><span className="font-bold text-sky-700">→</span></Link>
-              <Link to="/admin/payments" className="flex items-center justify-between gap-4 rounded-2xl border border-violet-100 bg-violet-50 p-5 hover:bg-violet-100/70"><div className="flex items-center gap-3"><CircleDollarSign className="text-violet-600" size={21} /><span className="font-bold text-slate-900">Payments</span></div><span className="font-bold text-violet-700">→</span></Link>
-              <Link to="/admin/reports" className="flex items-center justify-between gap-4 rounded-2xl border border-emerald-100 bg-emerald-50 p-5 hover:bg-emerald-100/70"><div className="flex items-center gap-3"><FileBarChart className="text-emerald-600" size={21} /><span className="font-bold text-slate-900">Reports</span></div><span className="font-bold text-emerald-700">→</span></Link>
+        <div>
+          <div className="mb-3 flex items-end justify-between gap-4">
+            <div>
+              <h2 className="text-base font-bold text-slate-950 dark:text-white">Quick actions</h2>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Jump straight to your most-used areas.</p>
             </div>
-          ) : (
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              <Link to="/user/events" className="flex items-center justify-between gap-4 rounded-2xl border border-indigo-100 bg-indigo-50 p-5 hover:bg-indigo-100/70"><div className="flex items-center gap-3"><Search className="text-indigo-600" size={21} /><span className="font-bold text-slate-900">Browse events</span></div><span className="font-bold text-indigo-700">→</span></Link>
-              <Link to="/user/registrations" className="flex items-center justify-between gap-4 rounded-2xl border border-violet-100 bg-violet-50 p-5 hover:bg-violet-100/70"><div className="flex items-center gap-3"><TicketCheck className="text-violet-600" size={21} /><span className="font-bold text-slate-900">My registrations</span></div><span className="font-bold text-violet-700">→</span></Link>
-            </div>
-          )}
-        </section>
+          </div>
+          <div className={`grid gap-3 ${admin ? 'md:grid-cols-2 xl:grid-cols-4' : 'md:grid-cols-2'}`}>
+            {admin ? (
+              <>
+                <QuickAction to="/admin/events" icon={<CalendarDays size={20} />} title="Manage events" description="Create, publish and close events" />
+                <QuickAction to="/admin/registrations" icon={<TicketCheck size={20} />} title="Registrations" description="Review attendee registrations" />
+                <QuickAction to="/admin/payments" icon={<CircleDollarSign size={20} />} title="Payments" description="Review payment activity" />
+                <QuickAction to="/admin/reports" icon={<FileBarChart size={20} />} title="Reports" description="Open operational reports" />
+              </>
+            ) : (
+              <>
+                <QuickAction to="/user/events" icon={<Search size={20} />} title="Browse events" description="Find published events to attend" />
+                <QuickAction to="/user/registrations" icon={<TicketCheck size={20} />} title="My registrations" description="Track registrations and payments" />
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </AppShell>
   );
 }
-

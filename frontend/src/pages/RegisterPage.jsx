@@ -1,7 +1,7 @@
-import { Eye, EyeOff, UserPlus } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Eye, EyeOff, Sparkles, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import Logo from '../components/Logo';
+import PublicLayout from '../components/PublicLayout';
 import { useAuth } from '../context/AuthContext';
 
 export default function RegisterPage() {
@@ -38,26 +38,131 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-10 flex items-center justify-center">
-      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/60">
-        <div className="flex justify-center"><Logo compact /></div>
-        <div className="mt-7 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-950">Create your account</h1>
-          <p className="mt-2 text-slate-500">Register as an EventoPlanners attendee.</p>
+    <PublicLayout authPage>
+      <section className="mx-auto grid min-h-[calc(100vh-76px)] max-w-6xl items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-14">
+        <aside className="hidden lg:block">
+          <div className="max-w-md">
+            <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300">
+              <Sparkles size={24} />
+            </div>
+            <h1 className="mt-6 text-4xl font-black tracking-[-0.03em] text-slate-950 dark:text-white">Create your attendee account and start discovering events.</h1>
+            <p className="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300">
+              Your account gives you one place to register for published events, manage payment-required registrations and track your attendance journey.
+            </p>
+            <div className="mt-8 space-y-3">
+              {['Browse published events and current availability', 'Track registration and payment status', 'Cancel eligible unpaid registrations'].map((item) => (
+                <div key={item} className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-300">
+                  <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-500" size={18} />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+        <div className="mx-auto w-full max-w-md rounded-[2rem] border border-slate-200/80 bg-white/90 p-6 shadow-2xl shadow-slate-300/35 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90 dark:shadow-black/20 sm:p-8">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-indigo-600 dark:text-indigo-300">Attendee registration</p>
+            <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-950 dark:text-white">Create account</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">Set up your EventoPlanners attendee profile.</p>
+          </div>
+
+          {error && (
+            <div role="alert" className="mt-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-3.5 text-sm font-semibold text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
+              <AlertCircle className="mt-0.5 shrink-0" size={18} />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            <label className="block text-left">
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Full name</span>
+              <input
+                required
+                minLength={2}
+                maxLength={100}
+                autoComplete="name"
+                value={form.name}
+                onChange={(event) => setForm({ ...form, name: event.target.value })}
+                className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
+                placeholder="Your full name"
+              />
+            </label>
+
+            <label className="block text-left">
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Email address</span>
+              <input
+                type="email"
+                required
+                autoComplete="email"
+                value={form.email}
+                onChange={(event) => setForm({ ...form, email: event.target.value })}
+                className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
+                placeholder="you@example.com"
+              />
+            </label>
+
+            <label className="block text-left">
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Password</span>
+              <div className="relative mt-2">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  minLength={8}
+                  maxLength={72}
+                  autoComplete="new-password"
+                  value={form.password}
+                  onChange={(event) => setForm({ ...form, password: event.target.value })}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 pr-12 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
+                  placeholder="At least 8 characters"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((value) => !value)}
+                  className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-slate-400 transition hover:text-slate-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-indigo-100 dark:hover:text-slate-200 dark:focus-visible:ring-indigo-500/20"
+                  aria-label={showPassword ? 'Hide passwords' : 'Show passwords'}
+                >
+                  {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
+                </button>
+              </div>
+            </label>
+
+            <label className="block text-left">
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Confirm password</span>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                minLength={8}
+                maxLength={72}
+                autoComplete="new-password"
+                value={form.confirmPassword}
+                onChange={(event) => setForm({ ...form, confirmPassword: event.target.value })}
+                className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
+                placeholder="Repeat your password"
+              />
+            </label>
+
+            <p className="text-xs leading-5 text-slate-500 dark:text-slate-400">Use 8–72 characters. Your password confirmation must match before the request is sent.</p>
+
+            <button
+              disabled={submitting}
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3.5 font-bold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200 disabled:cursor-not-allowed disabled:opacity-60 dark:focus-visible:ring-indigo-500/30"
+            >
+              <UserPlus size={18} />
+              {submitting ? 'Creating account...' : 'Create attendee account'}
+            </button>
+          </form>
+
+          <div className="mt-6 border-t border-slate-200 pt-5 text-center dark:border-slate-800">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Already have an account?{' '}
+              <Link to="/login" className="font-bold text-indigo-600 transition hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200">
+                Sign in
+              </Link>
+            </p>
+          </div>
         </div>
-
-        {error && <div className="mt-6 rounded-xl bg-red-50 p-3 text-sm font-medium text-red-700">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          <label className="block text-left"><span className="text-sm font-semibold text-slate-700">Full name</span><input required minLength={2} maxLength={100} autoComplete="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" placeholder="Your full name" /></label>
-          <label className="block text-left"><span className="text-sm font-semibold text-slate-700">Email address</span><input type="email" required autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" placeholder="you@example.com" /></label>
-          <label className="block text-left"><span className="text-sm font-semibold text-slate-700">Password</span><div className="relative mt-2"><input type={showPassword ? 'text' : 'password'} required minLength={8} maxLength={72} autoComplete="new-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="w-full rounded-xl border border-slate-200 px-4 py-3 pr-12 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" placeholder="At least 8 characters" /><button type="button" onClick={() => setShowPassword((value) => !value)} className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-slate-400 hover:text-slate-700" aria-label="Toggle password visibility">{showPassword ? <EyeOff size={19} /> : <Eye size={19} />}</button></div></label>
-          <label className="block text-left"><span className="text-sm font-semibold text-slate-700">Confirm password</span><input type={showPassword ? 'text' : 'password'} required minLength={8} maxLength={72} autoComplete="new-password" value={form.confirmPassword} onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })} className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" placeholder="Repeat your password" /></label>
-          <button disabled={submitting} className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 font-semibold text-white shadow-sm hover:bg-indigo-700 disabled:opacity-60"><UserPlus size={18} /> {submitting ? 'Creating account...' : 'Create account'}</button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-slate-500">Already have an account? <Link to="/login" className="font-semibold text-indigo-600 hover:text-indigo-700">Sign in</Link></p>
-      </div>
-    </main>
+      </section>
+    </PublicLayout>
   );
 }

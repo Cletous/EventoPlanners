@@ -41,3 +41,28 @@ a {
 ::selection {
   background: rgb(99 102 241 / 0.2);
 }
+
+/* Shared interaction and accessibility defaults */
+:focus-visible {
+  scroll-margin: 1rem;
+}
+
+html.dark {
+  color-scheme: dark;
+  background: #020617;
+}
+
+html.dark body {
+  background: #020617;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

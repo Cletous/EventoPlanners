@@ -16,6 +16,8 @@ import {
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
+import { AlertBanner, LoadingState } from '../components/ui/Feedback';
+import Surface from '../components/ui/Surface';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
@@ -39,14 +41,6 @@ function registrationStatusClass(status) {
   if (status === 'confirmed') return 'bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-300';
   if (status === 'pending_payment') return 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300';
   return 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300';
-}
-
-function Surface({ children, className = '' }) {
-  return (
-    <section className={`rounded-2xl border border-slate-200/90 bg-white shadow-sm shadow-slate-200/40 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none ${className}`}>
-      {children}
-    </section>
-  );
 }
 
 function SummaryCard({ icon, label, value, note }) {
@@ -95,17 +89,6 @@ function SectionHeading({ title, description, actionTo, actionLabel }) {
         </Link>
       )}
     </div>
-  );
-}
-
-function LoadingPanel() {
-  return (
-    <Surface className="mt-6 flex min-h-56 items-center justify-center">
-      <div className="text-center">
-        <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600 dark:border-indigo-500/20 dark:border-t-indigo-400" />
-        <p className="mt-4 text-sm font-medium text-slate-500 dark:text-slate-400">Loading dashboard...</p>
-      </div>
-    </Surface>
   );
 }
 
@@ -183,13 +166,9 @@ export default function DashboardPage({ admin = false }) {
           </div>
         </section>
 
-        {error && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
-            {error}
-          </div>
-        )}
+        {error && <AlertBanner tone="error">{error}</AlertBanner>}
 
-        {loading ? <LoadingPanel /> : (
+        {loading ? <LoadingState label="Loading dashboard..." className="mt-6" /> : (
           <>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               {admin ? (

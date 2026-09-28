@@ -1,7 +1,8 @@
-import { AlertCircle, CheckCircle2, Eye, EyeOff, Sparkles, UserPlus } from 'lucide-react';
+import { CheckCircle2, Eye, EyeOff, LoaderCircle, Sparkles, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import PublicLayout from '../components/PublicLayout';
+import { AlertBanner } from '../components/ui/Feedback';
 import { useAuth } from '../context/AuthContext';
 
 export default function RegisterPage() {
@@ -67,12 +68,7 @@ export default function RegisterPage() {
             <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">Set up your EventoPlanners attendee profile.</p>
           </div>
 
-          {error && (
-            <div role="alert" className="mt-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-3.5 text-sm font-semibold text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
-              <AlertCircle className="mt-0.5 shrink-0" size={18} />
-              <span>{error}</span>
-            </div>
-          )}
+          {error && <AlertBanner tone="error" className="mt-6">{error}</AlertBanner>}
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <label className="block text-left">
@@ -148,7 +144,7 @@ export default function RegisterPage() {
               disabled={submitting}
               className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3.5 font-bold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200 disabled:cursor-not-allowed disabled:opacity-60 dark:focus-visible:ring-indigo-500/30"
             >
-              <UserPlus size={18} />
+              {submitting ? <LoaderCircle size={18} className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> : <UserPlus size={18} aria-hidden="true" />}
               {submitting ? 'Creating account...' : 'Create attendee account'}
             </button>
           </form>

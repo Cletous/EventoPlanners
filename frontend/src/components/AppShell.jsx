@@ -168,6 +168,8 @@ export default function AppShell({ children, role }) {
 
   useEffect(() => {
     localStorage.setItem(THEME_KEY, theme);
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.documentElement.style.colorScheme = theme;
   }, [theme]);
 
   useEffect(() => {

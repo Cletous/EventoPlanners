@@ -1,6 +1,5 @@
 import {
   CalendarDays,
-  CheckCircle2,
   CircleDollarSign,
   Clock3,
   CreditCard,
@@ -12,6 +11,8 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import api from '../services/api';
+import { AlertBanner } from './ui/Feedback';
+import StatusBadge from './ui/StatusBadge';
 
 function formatDate(value) {
   if (!value) return 'Date unavailable';
@@ -137,12 +138,8 @@ export default function UserEventDetails({ event, onClose, onRegistered }) {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-2xl">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Published
-                </span>
-                <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
-                  {fee === 0 ? 'Free event' : `US$${fee.toFixed(2)}`}
-                </span>
+                <StatusBadge tone="success" dot>Published</StatusBadge>
+                <StatusBadge tone="info">{fee === 0 ? 'Free event' : `US$${fee.toFixed(2)}`}</StatusBadge>
               </div>
               <h2 id="event-details-title" className="mt-4 text-3xl font-black tracking-tight text-slate-950 dark:text-white sm:text-4xl">{event.title}</h2>
               <p className="mt-4 whitespace-pre-line text-sm leading-7 text-slate-600 dark:text-slate-400 sm:text-base">{event.description}</p>
@@ -167,21 +164,9 @@ export default function UserEventDetails({ event, onClose, onRegistered }) {
             <DetailItem icon={CircleDollarSign} label="Registration fee">{fee === 0 ? 'Free' : `US$${fee.toFixed(2)}`}</DetailItem>
           </div>
 
-          {message && (
-            <div role="status" className="mt-6 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800 dark:border-emerald-500/25 dark:bg-emerald-500/10 dark:text-emerald-300">
-              <CheckCircle2 size={20} className="mt-0.5 shrink-0" />
-              <div>
-                <p className="font-extrabold">Registration created</p>
-                <p className="mt-1 font-medium leading-6">{message}</p>
-              </div>
-            </div>
-          )}
+          {message && <AlertBanner tone="success" title="Registration created" className="mt-6">{message}</AlertBanner>}
 
-          {error && (
-            <div role="alert" className="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold leading-6 text-red-800 dark:border-red-500/25 dark:bg-red-500/10 dark:text-red-300">
-              {error}
-            </div>
-          )}
+          {error && <AlertBanner tone="error" className="mt-6">{error}</AlertBanner>}
 
           <div className="mt-7 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950/35 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-start gap-3">

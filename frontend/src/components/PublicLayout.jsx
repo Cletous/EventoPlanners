@@ -1,5 +1,5 @@
 import { ArrowLeft, Moon, Sun } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from './Logo';
 
@@ -15,9 +15,14 @@ export default function PublicLayout({ children, authPage = false }) {
   const [theme, setTheme] = useState(getInitialTheme);
   const dark = theme === 'dark';
 
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark);
+    document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+    localStorage.setItem(THEME_KEY, theme);
+  }, [dark, theme]);
+
   const toggleTheme = () => {
     const nextTheme = dark ? 'light' : 'dark';
-    localStorage.setItem(THEME_KEY, nextTheme);
     setTheme(nextTheme);
   };
 

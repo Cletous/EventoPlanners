@@ -5,7 +5,6 @@ import {
   Clock3,
   CreditCard,
   FileBarChart,
-  LogOut,
   Search,
   ShieldCheck,
   TicketCheck,
@@ -14,8 +13,8 @@ import {
   WalletCards,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Logo from '../components/Logo';
+import { Link } from 'react-router-dom';
+import AppShell from '../components/AppShell';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
@@ -76,8 +75,7 @@ function LoadingPanel() {
 }
 
 export default function DashboardPage({ admin = false }) {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -105,25 +103,13 @@ export default function DashboardPage({ admin = false }) {
     return () => { active = false; };
   }, [admin]);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login', { replace: true });
-  };
-
   const adminEvents = dashboard?.events || {};
   const registrations = dashboard?.registrations || {};
   const payments = dashboard?.payments || {};
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
-          <Logo compact />
-          <button onClick={handleLogout} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"><LogOut size={17} /> Logout</button>
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-6xl px-6 py-10">
+    <AppShell role={admin ? 'admin' : 'user'}>
+      <div className="mx-auto max-w-7xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
@@ -300,7 +286,7 @@ export default function DashboardPage({ admin = false }) {
           )}
         </section>
       </div>
-    </main>
+    </AppShell>
   );
 }
 

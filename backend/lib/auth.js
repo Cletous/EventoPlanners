@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import pool from './db';
 
 function getJwtSecret() {
   const secret = process.env.JWT_SECRET?.trim();
@@ -37,7 +38,7 @@ export function getBearerToken(request) {
   return token || null;
 }
 
-export function authenticateRequest(request, allowedRoles = []) {
+export async function authenticateRequest(request, allowedRoles = [], options = {}) {
   const token = getBearerToken(request);
 
   if (!token) {
@@ -50,8 +51,24 @@ export function authenticateRequest(request, allowedRoles = []) {
 
   try {
     const payload = verifyAccessToken(token);
+    const [rows] = await pool.execute(
+      `SELECT id, name, email, role, must_change_password
+       FROM users
+       WHERE id = ? AND deleted_at IS NULL
+       LIMIT 1`,
+      [payload.sub],
+    );
+    const user = rows[0];
 
-    if (allowedRoles.length > 0 && !allowedRoles.includes(payload.role)) {
+    if (!user) {
+      return {
+        ok: false,
+        status: 401,
+        message: 'User account no longer exists or is inactive.',
+      };
+    }
+
+    if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
       return {
         ok: false,
         status: 403,
@@ -59,7 +76,31 @@ export function authenticateRequest(request, allowedRoles = []) {
       };
     }
 
-    return { ok: true, payload };
+    if (user.must_change_password && !options.allowPasswordChangeRequired) {
+      return {
+        ok: false,
+        status: 403,
+        code: 'PASSWORD_CHANGE_REQUIRED',
+        message: 'You must change your password before continuing.',
+      };
+    }
+
+    return {
+      ok: true,
+      payload: {
+        ...payload,
+        sub: String(user.id),
+        email: user.email,
+        role: user.role,
+      },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        must_change_password: Boolean(user.must_change_password),
+      },
+    };
   } catch {
     return {
       ok: false,

@@ -36,7 +36,7 @@ async function fetchEvent(id) {
 }
 
 export async function GET(request, context) {
-  const authentication = authenticateRequest(request, ['admin']);
+  const authentication = await authenticateRequest(request, ['admin']);
   if (!authentication.ok) return unauthorized(authentication);
 
   const id = await resolveId(context);
@@ -61,7 +61,7 @@ export async function GET(request, context) {
 }
 
 export async function PATCH(request, context) {
-  const authentication = authenticateRequest(request, ['admin']);
+  const authentication = await authenticateRequest(request, ['admin']);
   if (!authentication.ok) return unauthorized(authentication);
 
   const id = await resolveId(context);
@@ -115,7 +115,7 @@ export async function PATCH(request, context) {
 }
 
 export async function DELETE(request, context) {
-  const authentication = authenticateRequest(request, ['admin']);
+  const authentication = await authenticateRequest(request, ['admin']);
   if (!authentication.ok) return unauthorized(authentication);
 
   const id = await resolveId(context);

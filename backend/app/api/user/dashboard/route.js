@@ -12,7 +12,7 @@ function unauthorized(authentication) {
 }
 
 export async function GET(request) {
-  const authentication = authenticateRequest(request, ['user']);
+  const authentication = await authenticateRequest(request, ['user']);
   if (!authentication.ok) return unauthorized(authentication);
 
   const userId = Number(authentication.payload.sub);

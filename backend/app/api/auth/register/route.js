@@ -55,8 +55,8 @@ export async function POST(request) {
 
     const passwordHash = await bcrypt.hash(password, 10);
     const [result] = await pool.execute(
-      `INSERT INTO users (name, email, password_hash, role, created_at, updated_at)
-       VALUES (?, ?, ?, 'user', NOW(), NOW())`,
+      `INSERT INTO users (name, email, password_hash, role, must_change_password, created_at, updated_at)
+       VALUES (?, ?, ?, 'user', 0, NOW(), NOW())`,
       [name, email, passwordHash],
     );
 
@@ -65,6 +65,7 @@ export async function POST(request) {
       name,
       email,
       role: 'user',
+      must_change_password: false,
     };
 
     const token = createAccessToken(user);

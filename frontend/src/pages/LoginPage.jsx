@@ -15,7 +15,7 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
 
   if (!isLoading && user) {
-    return <Navigate to={user.role === 'admin' ? '/admin/dashboard' : '/user/dashboard'} replace />;
+    return <Navigate to={user.must_change_password ? '/account?forcePassword=1' : (user.role === 'admin' ? '/admin/dashboard' : '/user/dashboard')} replace />;
   }
 
   const handleSubmit = async (event) => {
@@ -25,6 +25,10 @@ export default function LoginPage() {
 
     try {
       const authenticatedUser = await login(form);
+      if (authenticatedUser.must_change_password) {
+        navigate('/account?forcePassword=1', { replace: true });
+        return;
+      }
       const defaultDestination = authenticatedUser.role === 'admin' ? '/admin/dashboard' : '/user/dashboard';
       const requestedDestination = location.state?.from;
       navigate(requestedDestination || defaultDestination, { replace: true });
@@ -65,6 +69,7 @@ export default function LoginPage() {
             <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">Enter your EventoPlanners account credentials.</p>
           </div>
 
+          {location.state?.accountDeleted && <AlertBanner tone="success" className="mt-6">Your account has been deleted and you have been signed out.</AlertBanner>}
           {error && <AlertBanner tone="error" className="mt-6">{error}</AlertBanner>}
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-5">

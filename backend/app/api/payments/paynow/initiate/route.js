@@ -24,7 +24,7 @@ function createReference(registrationId) {
 }
 
 export async function POST(request) {
-  const authentication = authenticateRequest(request, ['user']);
+  const authentication = await authenticateRequest(request, ['user']);
   if (!authentication.ok) return unauthorized(authentication);
 
   let body;

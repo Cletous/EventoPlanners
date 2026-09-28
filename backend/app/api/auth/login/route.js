@@ -19,9 +19,9 @@ export async function POST(request) {
     }
 
     const [rows] = await pool.execute(
-      `SELECT id, name, email, password_hash, role
+      `SELECT id, name, email, password_hash, role, must_change_password
        FROM users
-       WHERE email = ?
+       WHERE email = ? AND deleted_at IS NULL
        LIMIT 1`,
       [email],
     );
@@ -49,6 +49,7 @@ export async function POST(request) {
       name: userRow.name,
       email: userRow.email,
       role: userRow.role,
+      must_change_password: Boolean(userRow.must_change_password),
     };
 
     const token = createAccessToken(user);

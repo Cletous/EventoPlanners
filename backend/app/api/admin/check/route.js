@@ -4,7 +4,7 @@ import { authenticateRequest } from '@/lib/auth';
 export const runtime = 'nodejs';
 
 export async function GET(request) {
-  const authentication = authenticateRequest(request, ['admin']);
+  const authentication = await authenticateRequest(request, ['admin']);
 
   if (!authentication.ok) {
     return NextResponse.json(

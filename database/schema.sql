@@ -13,10 +13,13 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(150) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   role ENUM('admin', 'user') NOT NULL DEFAULT 'user',
+  must_change_password TINYINT(1) NOT NULL DEFAULT 0,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at DATETIME NULL,
   PRIMARY KEY (id),
-  UNIQUE KEY uq_users_email (email)
+  UNIQUE KEY uq_users_email (email),
+  KEY idx_users_deleted_at (deleted_at)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS events (

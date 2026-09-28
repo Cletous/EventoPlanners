@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import { LoadingState } from './components/ui/Feedback';
 
+const AccountPage = lazy(() => import('./pages/AccountPage'));
 const AdminEventsPage = lazy(() => import('./pages/AdminEventsPage'));
 const AdminPaymentsPage = lazy(() => import('./pages/AdminPaymentsPage'));
 const AdminRegistrationsPage = lazy(() => import('./pages/AdminRegistrationsPage'));
@@ -32,6 +33,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/account" element={<ProtectedRoute roles={['user', 'admin']}><AccountPage /></ProtectedRoute>} />
         <Route path="/user/dashboard" element={<ProtectedRoute roles={['user']}><DashboardPage /></ProtectedRoute>} />
         <Route path="/user/events" element={<ProtectedRoute roles={['user']}><UserEventsPage /></ProtectedRoute>} />
         <Route path="/user/registrations" element={<ProtectedRoute roles={['user']}><UserRegistrationsPage /></ProtectedRoute>} />

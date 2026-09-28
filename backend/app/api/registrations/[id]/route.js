@@ -17,7 +17,7 @@ function parseRegistrationId(value) {
 }
 
 export async function PATCH(request, context) {
-  const authentication = authenticateRequest(request, ['user']);
+  const authentication = await authenticateRequest(request, ['user']);
   if (!authentication.ok) return unauthorized(authentication);
 
   const params = await context.params;

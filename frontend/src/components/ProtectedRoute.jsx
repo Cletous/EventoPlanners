@@ -20,6 +20,10 @@ export default function ProtectedRoute({ children, roles = [] }) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
+  if (user.must_change_password && location.pathname !== '/account') {
+    return <Navigate to="/account?forcePassword=1" replace />;
+  }
+
   if (roles.length > 0 && !roles.includes(user.role)) {
     const destination = user.role === 'admin' ? '/admin/dashboard' : '/user/dashboard';
     return <Navigate to={destination} replace />;

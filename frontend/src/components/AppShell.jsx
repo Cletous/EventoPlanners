@@ -9,6 +9,7 @@ import {
   Moon,
   PanelLeftClose,
   PanelLeftOpen,
+  Settings,
   Sun,
   TicketCheck,
   X,
@@ -26,12 +27,14 @@ const adminNavigation = [
   { label: 'Registrations', to: '/admin/registrations', icon: TicketCheck },
   { label: 'Payments', to: '/admin/payments', icon: CreditCard },
   { label: 'Reports', to: '/admin/reports', icon: FileBarChart },
+  { label: 'My account', to: '/account', icon: Settings },
 ];
 
 const userNavigation = [
   { label: 'Dashboard', to: '/user/dashboard', icon: LayoutDashboard },
   { label: 'Browse events', to: '/user/events', icon: CalendarDays },
   { label: 'My registrations', to: '/user/registrations', icon: TicketCheck },
+  { label: 'My account', to: '/account', icon: Settings },
 ];
 
 function getInitialTheme() {

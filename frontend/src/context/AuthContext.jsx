@@ -48,14 +48,22 @@ export function AuthProvider({ children }) {
     return response.data.user;
   }, [completeAuthentication]);
 
+  const updateUser = useCallback((nextUser) => {
+    setUser(nextUser);
+  }, []);
+
+  const refreshAuthentication = useCallback((authentication) => {
+    completeAuthentication(authentication);
+  }, [completeAuthentication]);
+
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
     setUser(null);
   }, []);
 
   const value = useMemo(
-    () => ({ user, isLoading, login, register, logout }),
-    [user, isLoading, login, register, logout],
+    () => ({ user, isLoading, login, register, logout, updateUser, refreshAuthentication }),
+    [user, isLoading, login, register, logout, updateUser, refreshAuthentication],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

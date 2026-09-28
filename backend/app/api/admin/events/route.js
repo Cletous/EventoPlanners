@@ -13,7 +13,7 @@ function unauthorized(authentication) {
 }
 
 export async function GET(request) {
-  const authentication = authenticateRequest(request, ['admin']);
+  const authentication = await authenticateRequest(request, ['admin']);
   if (!authentication.ok) return unauthorized(authentication);
 
   try {
@@ -52,7 +52,7 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  const authentication = authenticateRequest(request, ['admin']);
+  const authentication = await authenticateRequest(request, ['admin']);
   if (!authentication.ok) return unauthorized(authentication);
 
   try {

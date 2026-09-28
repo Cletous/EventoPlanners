@@ -5,7 +5,7 @@ import { PaymentSyncError, syncPaymentWithPaynow } from '@/lib/payment-sync';
 export const runtime = 'nodejs';
 
 export async function POST(request, context) {
-  const authentication = authenticateRequest(request, ['admin']);
+  const authentication = await authenticateRequest(request, ['admin']);
   if (!authentication.ok) {
     return NextResponse.json(
       { success: false, message: authentication.message },

@@ -14,7 +14,7 @@ function unauthorized(authentication) {
 const allowedStatuses = new Set(['pending_payment', 'confirmed', 'cancelled']);
 
 export async function GET(request) {
-  const authentication = authenticateRequest(request, ['admin']);
+  const authentication = await authenticateRequest(request, ['admin']);
   if (!authentication.ok) return unauthorized(authentication);
 
   try {

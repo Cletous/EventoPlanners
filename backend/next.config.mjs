@@ -1,4 +1,12 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const backendRoot = path.dirname(fileURLToPath(import.meta.url));
+
 const nextConfig = {
+  turbopack: {
+    root: backendRoot,
+  },
   async headers() {
     return [
       {

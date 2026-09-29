@@ -60,7 +60,7 @@ test.describe('User event and registration flows', () => {
     const registrationCard = page.locator('article').filter({ hasText: event.title });
     await registrationCard.getByRole('button', { name: 'Cancel unpaid registration' }).click();
     await page.getByRole('dialog').getByRole('button', { name: /Cancel registration|Confirm/i }).last().click();
-    await expect(page.getByText('Registration cancelled.')).toBeVisible();
+    await expect(page.getByText(new RegExp(`Registration for ${event.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} has been cancelled\\.`, 'i'))).toBeVisible();
     await expect(page.getByText('This registration is cancelled')).toBeVisible();
   });
 

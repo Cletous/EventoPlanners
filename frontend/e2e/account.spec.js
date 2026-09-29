@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { injectToken, registerUser, uniqueValue } from './helpers/api.js';
+import { loginViaUi } from './helpers/ui.js';
 
 test.describe('Self-service account management', () => {
   test('user can update profile information and change password', async ({ request, page }) => {
@@ -30,6 +31,10 @@ test.describe('Self-service account management', () => {
     const dialog = page.getByRole('dialog');
     await dialog.getByRole('button', { name: /Delete account|Confirm deletion|Delete my account/i }).last().click();
     await expect(page).toHaveURL(/\/login$/);
-    await expect(page.getByText(/account has been deleted/i)).toBeVisible();
+
+    // Verify the deleted account is genuinely inactive rather than relying on a transient redirect banner.
+    await loginViaUi(page, user.email, user.password);
+    await expect(page.getByRole('alert')).toContainText('Invalid email or password.');
+    await expect(page).toHaveURL(/\/login$/);
   });
 });

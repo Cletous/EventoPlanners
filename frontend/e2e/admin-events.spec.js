@@ -1,15 +1,16 @@
 import { test, expect } from '@playwright/test';
-import { futureDate, hasAdminCredentials, uniqueValue } from './helpers/api.js';
+import { API_BASE, futureDate, hasAdminCredentials, loginAdminApi, uniqueValue } from './helpers/api.js';
 import { loginAdminViaUi } from './helpers/ui.js';
 
 test.describe('Admin event management', () => {
   test.skip(!hasAdminCredentials(), 'Set E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD.');
 
-  test('admin can create, edit, publish, close and delete an event', async ({ page }) => {
+  test('admin can create, edit, publish, close and delete an event', async ({ request, page }) => {
     const suffix = uniqueValue('crud');
     const title = `E2E CRUD ${suffix}`;
     const updatedTitle = `${title} Updated`;
 
+    const admin = await loginAdminApi(request);
     await loginAdminViaUi(page);
     await page.goto('/admin/events');
     await page.getByRole('button', { name: 'Create event' }).click();
@@ -31,10 +32,26 @@ test.describe('Admin event management', () => {
     let row = page.getByRole('row').filter({ hasText: title });
     await expect(row).toBeVisible();
 
+    // Warm the dynamic [id] route before the browser edit. Next.js dev compilation can otherwise
+    // exceed the application's short Axios timeout on the first request to this route.
+    const idText = await row.getByText(/ID #\d+/).textContent();
+    const eventId = Number(idText?.match(/\d+/)?.[0]);
+    expect(eventId).toBeGreaterThan(0);
+    const warmResponse = await request.get(`${API_BASE}/admin/events/${eventId}`, {
+      headers: { Authorization: `Bearer ${admin.token}` },
+    });
+    expect(warmResponse.ok()).toBeTruthy();
+
     await row.getByRole('button', { name: `Edit ${title}` }).click();
     const editDialog = page.getByRole('dialog', { name: /Edit event/i });
     await editDialog.getByPlaceholder('e.g. Software Engineering Research Symposium').fill(updatedTitle);
+    const updateResponsePromise = page.waitForResponse((response) =>
+      response.url().includes(`/api/admin/events/${eventId}`) && response.request().method() === 'PATCH',
+    );
     await editDialog.getByRole('button', { name: /Save changes|Save event|Update event/i }).click();
+    const updateResponse = await updateResponsePromise;
+    const updateBody = await updateResponse.json();
+    expect(updateResponse.ok(), `Event update failed: ${JSON.stringify(updateBody)}`).toBeTruthy();
     await expect(page.getByText('Event updated successfully.')).toBeVisible();
 
     await page.getByPlaceholder('Search title, venue or description').fill(updatedTitle);

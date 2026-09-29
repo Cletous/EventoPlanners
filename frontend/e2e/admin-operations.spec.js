@@ -24,7 +24,7 @@ test.describe('Admin operational workspaces', () => {
     await expect(page.getByText(user.email).first()).toBeVisible();
 
     const cardOrRow = page.locator('tr').filter({ hasText: user.email });
-    await cardOrRow.getByRole('button', { name: 'Confirm offline payment' }).click();
+    await cardOrRow.getByRole('button', { name: 'Confirm offline', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'Confirm payment' });
     await dialog.getByText('Manual payment', { exact: true }).click();
     await dialog.getByPlaceholder('Receipt, voucher or other reference').fill(`E2E-RECEIPT-${Date.now()}`);

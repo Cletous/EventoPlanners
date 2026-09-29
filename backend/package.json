@@ -16,7 +16,8 @@
     "seed:admin": "node --env-file=.env.local scripts/create-admin.js",
     "db:migrate:account-management": "node --env-file=.env.local scripts/add-account-management.js",
     "db:migrate:manual-payments": "node --env-file=.env.local scripts/add-manual-payments.mjs",
-    "test:e2e:cleanup": "node --env-file=.env.local scripts/cleanup-e2e.js"
+    "test:e2e:cleanup": "node --env-file=.env.local scripts/cleanup-e2e.js",
+    "db:reset-demo": "node --env-file=.env.local scripts/reset-demo-data.mjs"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

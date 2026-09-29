@@ -29,6 +29,12 @@ function formatMoney(value) {
   return `US$${Number(value || 0).toFixed(2)}`;
 }
 
+
+function paymentMethodLabel(method) {
+  if (method === 'bank_transfer') return 'Bank transfer';
+  if (method === 'manual') return 'Manual payment';
+  return 'Paynow';
+}
 function paymentStatusLabel(status) {
   if (!status) return 'Unknown';
   return status.charAt(0).toUpperCase() + status.slice(1).replaceAll('_', ' ');
@@ -103,7 +109,7 @@ function LoadingTable() {
 }
 
 function PaymentAction({ payment, checking, onCheck }) {
-  const canPoll = Boolean(Number(payment.can_poll));
+  const canPoll = payment.payment_method === 'paynow' && Boolean(Number(payment.can_poll));
   const isChecking = checking === payment.reference;
 
   if (payment.status === 'paid') {
@@ -170,10 +176,21 @@ function MobilePaymentCard({ payment, checking, onCheck }) {
       </div>
 
       <div className="mt-4 border-t border-slate-100 pt-4 dark:border-slate-800">
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-bold text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+            {paymentMethodLabel(payment.payment_method)}
+          </span>
+          {payment.confirmed_by_name && (
+            <span className="text-xs text-slate-400 dark:text-slate-500">Confirmed by {payment.confirmed_by_name}</span>
+          )}
+        </div>
         <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Reference</p>
         <p className="mt-1 break-all font-mono text-[11px] text-slate-600 dark:text-slate-300">{payment.reference}</p>
         {payment.paynow_reference && (
           <p className="mt-1 break-all text-[11px] text-slate-400 dark:text-slate-500">Paynow: {payment.paynow_reference}</p>
+        )}
+        {payment.external_reference && (
+          <p className="mt-1 break-all text-[11px] text-slate-400 dark:text-slate-500">External: {payment.external_reference}</p>
         )}
       </div>
 
@@ -189,14 +206,16 @@ export default function AdminPaymentsPage() {
   const [payments, setPayments] = useState([]);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
+  const [method, setMethod] = useState('');
   const [activeSearch, setActiveSearch] = useState('');
   const [activeStatus, setActiveStatus] = useState('');
+  const [activeMethod, setActiveMethod] = useState('');
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(null);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
-  const loadPayments = async (nextSearch = search, nextStatus = status) => {
+  const loadPayments = async (nextSearch = search, nextStatus = status, nextMethod = method) => {
     setLoading(true);
     setError('');
 
@@ -205,11 +224,13 @@ export default function AdminPaymentsPage() {
       const params = {};
       if (trimmedSearch) params.search = trimmedSearch;
       if (nextStatus) params.status = nextStatus;
+      if (nextMethod) params.method = nextMethod;
 
       const response = await api.get('/admin/payments', { params });
       setPayments(response.data.payments || []);
       setActiveSearch(trimmedSearch);
       setActiveStatus(nextStatus);
+      setActiveMethod(nextMethod);
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Unable to load payments.');
     } finally {
@@ -218,7 +239,7 @@ export default function AdminPaymentsPage() {
   };
 
   useEffect(() => {
-    loadPayments('', '');
+    loadPayments('', '', '');
     // Initial load only; filters are applied explicitly by the user.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -231,7 +252,7 @@ export default function AdminPaymentsPage() {
     try {
       const response = await api.post(`/admin/payments/${encodeURIComponent(payment.reference)}/check`);
       setMessage(response.data.message || 'Payment status checked.');
-      await loadPayments(activeSearch, activeStatus);
+      await loadPayments(activeSearch, activeStatus, activeMethod);
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Unable to check Paynow payment status.');
     } finally {
@@ -248,19 +269,20 @@ export default function AdminPaymentsPage() {
       .reduce((sum, payment) => sum + Number(payment.amount || 0), 0),
   }), [payments]);
 
-  const hasActiveFilters = Boolean(activeSearch || activeStatus);
+  const hasActiveFilters = Boolean(activeSearch || activeStatus || activeMethod);
 
   const clearFilters = () => {
     setSearch('');
     setStatus('');
+    setMethod('');
     setMessage('');
-    loadPayments('', '');
+    loadPayments('', '', '');
   };
 
   const applyStatus = (nextStatus) => {
     setStatus(nextStatus);
     setMessage('');
-    loadPayments(search, nextStatus);
+    loadPayments(search, nextStatus, method);
   };
 
   return (
@@ -274,7 +296,7 @@ export default function AdminPaymentsPage() {
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-300">Payment operations</p>
                 <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-950 dark:text-white sm:text-4xl">Payment attempts</h2>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400 sm:text-base">
-                  Review Paynow activity, trace attempts back to attendees and events, and manually refresh eligible payment statuses when needed.
+                  Review Paynow and offline payment activity, trace attempts back to attendees and events, and refresh eligible Paynow statuses when needed.
                 </p>
               </div>
               <Link
@@ -314,7 +336,7 @@ export default function AdminPaymentsPage() {
             <span className="font-semibold">{error}</span>
             <button
               type="button"
-              onClick={() => loadPayments(activeSearch, activeStatus)}
+              onClick={() => loadPayments(activeSearch, activeStatus, activeMethod)}
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100 dark:border-red-500/20 dark:bg-red-950/20 dark:text-red-300 dark:hover:bg-red-500/10"
             >
               <RefreshCw size={14} />
@@ -331,7 +353,7 @@ export default function AdminPaymentsPage() {
                 setMessage('');
                 loadPayments();
               }}
-              className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px_auto]"
+              className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_190px_190px_auto]"
             >
               <label className="relative block">
                 <span className="sr-only">Search payments</span>
@@ -358,6 +380,20 @@ export default function AdminPaymentsPage() {
                 </select>
               </label>
 
+              <label>
+                <span className="sr-only">Payment method</span>
+                <select
+                  value={method}
+                  onChange={(event) => setMethod(event.target.value)}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20"
+                >
+                  <option value="">All methods</option>
+                  <option value="paynow">Paynow</option>
+                  <option value="bank_transfer">Bank transfer</option>
+                  <option value="manual">Manual payment</option>
+                </select>
+              </label>
+
               <div className="flex gap-2">
                 <button
                   type="submit"
@@ -366,7 +402,7 @@ export default function AdminPaymentsPage() {
                   <Search size={16} />
                   Apply
                 </button>
-                {(search || status || hasActiveFilters) && (
+                {(search || status || method || hasActiveFilters) && (
                   <button
                     type="button"
                     onClick={clearFilters}
@@ -405,7 +441,8 @@ export default function AdminPaymentsPage() {
               <p className="mt-3 text-xs font-semibold text-slate-400 dark:text-slate-500">
                 Showing {payments.length} result{payments.length === 1 ? '' : 's'}
                 {activeSearch ? ` for “${activeSearch}”` : ''}
-                {activeStatus ? ` with status ${paymentStatusLabel(activeStatus).toLowerCase()}` : ''}.
+                {activeStatus ? ` with status ${paymentStatusLabel(activeStatus).toLowerCase()}` : ''}
+                {activeMethod ? ` via ${paymentMethodLabel(activeMethod).toLowerCase()}` : ''}.
               </p>
             )}
           </div>
@@ -448,6 +485,7 @@ export default function AdminPaymentsPage() {
                       <th className="sticky left-0 z-20 w-[230px] min-w-[230px] max-w-[230px] border-b border-r border-slate-200 bg-slate-50 px-5 py-4 shadow-[6px_0_10px_-10px_rgba(15,23,42,0.35)] dark:border-slate-800 dark:bg-slate-950">Attendee</th>
                       <th className="min-w-[240px] border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Event</th>
                       <th className="min-w-[120px] border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Amount</th>
+                      <th className="min-w-[160px] border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Method</th>
                       <th className="min-w-[260px] border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Reference</th>
                       <th className="min-w-[160px] border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Registration</th>
                       <th className="min-w-[120px] border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-950">Status</th>
@@ -477,9 +515,18 @@ export default function AdminPaymentsPage() {
                           {formatMoney(payment.amount)}
                         </td>
                         <td className="border-b border-slate-100 px-5 py-4 transition group-hover:bg-slate-50/70 dark:border-slate-800 dark:group-hover:bg-slate-800/40">
+                          <p className="font-bold text-slate-700 dark:text-slate-200">{paymentMethodLabel(payment.payment_method)}</p>
+                          {payment.confirmed_by_name && (
+                            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">By {payment.confirmed_by_name}</p>
+                          )}
+                        </td>
+                        <td className="border-b border-slate-100 px-5 py-4 transition group-hover:bg-slate-50/70 dark:border-slate-800 dark:group-hover:bg-slate-800/40">
                           <p className="break-all font-mono text-xs font-semibold text-slate-600 dark:text-slate-300">{payment.reference}</p>
                           {payment.paynow_reference && (
                             <p className="mt-1 break-all text-xs text-slate-400 dark:text-slate-500">Paynow: {payment.paynow_reference}</p>
+                          )}
+                          {payment.external_reference && (
+                            <p className="mt-1 break-all text-xs text-slate-400 dark:text-slate-500">External: {payment.external_reference}</p>
                           )}
                         </td>
                         <td className="border-b border-slate-100 px-5 py-4 transition group-hover:bg-slate-50/70 dark:border-slate-800 dark:group-hover:bg-slate-800/40">

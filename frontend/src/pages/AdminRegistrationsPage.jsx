@@ -1,5 +1,6 @@
 import {
   ArrowRight,
+  Banknote,
   CalendarDays,
   CheckCircle2,
   CircleDollarSign,
@@ -13,6 +14,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
+import OfflinePaymentModal from '../components/OfflinePaymentModal';
 import api from '../services/api';
 
 function formatDate(value) {
@@ -43,6 +45,14 @@ function registrationStatusLabel(status) {
   if (status === 'pending_payment') return 'Pending payment';
   if (!status) return 'Unknown';
   return status.charAt(0).toUpperCase() + status.slice(1).replaceAll('_', ' ');
+}
+
+
+function paymentMethodLabel(method) {
+  if (method === 'bank_transfer') return 'Bank transfer';
+  if (method === 'manual') return 'Manual payment';
+  if (method === 'paynow') return 'Paynow';
+  return '';
 }
 
 function RegistrationBadge({ status }) {
@@ -108,7 +118,7 @@ function LoadingTable() {
   );
 }
 
-function MobileRegistrationCard({ registration }) {
+function MobileRegistrationCard({ registration, onConfirmOffline }) {
   return (
     <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="flex items-start justify-between gap-3">
@@ -142,6 +152,9 @@ function MobileRegistrationCard({ registration }) {
       <div className="mt-4 border-t border-slate-100 pt-4 dark:border-slate-800">
         <div className="flex flex-wrap items-center gap-2">
           <PaymentBadge status={registration.latest_payment_status} />
+          {registration.latest_payment_method && (
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{paymentMethodLabel(registration.latest_payment_method)}</span>
+          )}
           {registration.latest_payment_reference && (
             <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
               {formatMoney(registration.latest_payment_amount)}
@@ -154,11 +167,25 @@ function MobileRegistrationCard({ registration }) {
             {registration.latest_paynow_reference && (
               <p className="mt-1 break-all text-[11px] text-slate-400 dark:text-slate-500">Paynow: {registration.latest_paynow_reference}</p>
             )}
+            {registration.latest_external_reference && (
+              <p className="mt-1 break-all text-[11px] text-slate-400 dark:text-slate-500">External: {registration.latest_external_reference}</p>
+            )}
           </>
         ) : (
           <p className="mt-2 text-xs text-slate-400 dark:text-slate-500">No payment attempts recorded.</p>
         )}
       </div>
+
+      {registration.status === 'pending_payment' && Number(registration.registration_fee || 0) > 0 && (
+        <button
+          type="button"
+          onClick={() => onConfirmOffline(registration)}
+          className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-green-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-green-100 dark:focus-visible:ring-green-500/20"
+        >
+          <Banknote size={16} />
+          Confirm offline payment
+        </button>
+      )}
 
       <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">Registered {formatDateTime(registration.created_at)}</p>
     </article>
@@ -173,6 +200,8 @@ export default function AdminRegistrationsPage() {
   const [activeStatus, setActiveStatus] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [offlineRegistration, setOfflineRegistration] = useState(null);
 
   const loadRegistrations = async (nextSearch = search, nextStatus = status) => {
     setLoading(true);
@@ -210,14 +239,22 @@ export default function AdminRegistrationsPage() {
   const hasActiveFilters = Boolean(activeSearch || activeStatus);
 
   const clearFilters = () => {
+    setMessage('');
     setSearch('');
     setStatus('');
     loadRegistrations('', '');
   };
 
   const applyStatus = (nextStatus) => {
+    setMessage('');
     setStatus(nextStatus);
     loadRegistrations(search, nextStatus);
+  };
+
+  const handleOfflineConfirmed = async (response) => {
+    setMessage(response?.message || 'Offline payment confirmed.');
+    setOfflineRegistration(null);
+    await loadRegistrations(activeSearch, activeStatus);
   };
 
   return (
@@ -257,6 +294,13 @@ export default function AdminRegistrationsPage() {
           <SummaryCard icon={Clock3} label="Pending payment" value={totals.pending} hint="Awaiting successful payment" tone="amber" />
           <SummaryCard icon={XCircle} label="Cancelled" value={totals.cancelled} hint="No longer active" tone="slate" />
         </section>
+
+        {message && (
+          <div role="status" className="flex items-center gap-2 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm font-semibold text-green-700 dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-300">
+            <CheckCircle2 size={17} />
+            {message}
+          </div>
+        )}
 
         {error && (
           <div className="flex flex-col gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300 sm:flex-row sm:items-center sm:justify-between" role="alert">
@@ -383,7 +427,7 @@ export default function AdminRegistrationsPage() {
             <>
               <div className="space-y-3 p-4 md:hidden">
                 {registrations.map((registration) => (
-                  <MobileRegistrationCard key={registration.id} registration={registration} />
+                  <MobileRegistrationCard key={registration.id} registration={registration} onConfirmOffline={setOfflineRegistration} />
                 ))}
               </div>
 
@@ -397,6 +441,7 @@ export default function AdminRegistrationsPage() {
                       <th className="px-5 py-4">Attempts</th>
                       <th className="px-5 py-4">Latest payment</th>
                       <th className="px-5 py-4">Registered</th>
+                      <th className="min-w-[190px] px-5 py-4">Payment action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -440,11 +485,17 @@ export default function AdminRegistrationsPage() {
                             <div className="max-w-[260px]">
                               <div className="flex flex-wrap items-center gap-2">
                                 <PaymentBadge status={registration.latest_payment_status} />
+                                {registration.latest_payment_method && (
+                                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{paymentMethodLabel(registration.latest_payment_method)}</span>
+                                )}
                                 <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{formatMoney(registration.latest_payment_amount)}</span>
                               </div>
                               <p className="mt-2 break-all font-mono text-[11px] text-slate-500 dark:text-slate-400">{registration.latest_payment_reference}</p>
                               {registration.latest_paynow_reference && (
                                 <p className="mt-1 break-all text-[11px] text-slate-400 dark:text-slate-500">Paynow: {registration.latest_paynow_reference}</p>
+                              )}
+                              {registration.latest_external_reference && (
+                                <p className="mt-1 break-all text-[11px] text-slate-400 dark:text-slate-500">External: {registration.latest_external_reference}</p>
                               )}
                             </div>
                           ) : (
@@ -456,6 +507,21 @@ export default function AdminRegistrationsPage() {
                           <p className="font-semibold text-slate-700 dark:text-slate-300">{formatDate(registration.created_at)}</p>
                           <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{formatDateTime(registration.created_at).split(', ').slice(-1)[0]}</p>
                         </td>
+
+                        <td className="px-5 py-4">
+                          {registration.status === 'pending_payment' && Number(registration.registration_fee || 0) > 0 ? (
+                            <button
+                              type="button"
+                              onClick={() => setOfflineRegistration(registration)}
+                              className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 px-3 py-2 text-xs font-bold text-white transition hover:bg-green-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-green-100 dark:focus-visible:ring-green-500/20"
+                            >
+                              <Banknote size={15} />
+                              Confirm offline
+                            </button>
+                          ) : (
+                            <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">No action needed</span>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -465,6 +531,13 @@ export default function AdminRegistrationsPage() {
           )}
         </section>
       </div>
+
+      <OfflinePaymentModal
+        open={Boolean(offlineRegistration)}
+        registration={offlineRegistration}
+        onClose={() => setOfflineRegistration(null)}
+        onConfirmed={handleOfflineConfirmed}
+      />
     </AppShell>
   );
 }

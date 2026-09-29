@@ -35,6 +35,13 @@ function formatMoney(value) {
   return `US$${Number(value || 0).toFixed(2)}`;
 }
 
+
+function paymentMethodLabel(method) {
+  if (method === 'bank_transfer') return 'Bank transfer';
+  if (method === 'manual') return 'Manual payment';
+  return 'Paynow';
+}
+
 function statusLabel(status) {
   if (status === 'pending_payment') return 'Pending payment';
   if (!status) return 'Unknown';
@@ -257,8 +264,11 @@ function PaymentMobileCard({ payment }) {
         <p className="text-xs text-slate-400 dark:text-slate-500">#{payment.registration_id}</p>
       </div>
       <div className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
+        <p className="mb-2 text-xs font-bold text-slate-600 dark:text-slate-300">{paymentMethodLabel(payment.payment_method)}</p>
         <p className="break-all font-mono text-[11px] text-slate-600 dark:text-slate-300">{payment.reference}</p>
         {payment.paynow_reference && <p className="mt-1 break-all text-[11px] text-slate-400 dark:text-slate-500">Paynow: {payment.paynow_reference}</p>}
+        {payment.external_reference && <p className="mt-1 break-all text-[11px] text-slate-400 dark:text-slate-500">External: {payment.external_reference}</p>}
+        {payment.confirmed_by_name && <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">Confirmed by {payment.confirmed_by_name}</p>}
         <p className="mt-2 text-xs text-slate-400 dark:text-slate-500">Created {formatDateTime(payment.created_at)}</p>
       </div>
     </article>
@@ -354,8 +364,8 @@ export default function AdminReportsPage() {
 
   const exportPayments = () => downloadCsv(
     'eventoplanners-payment-report.csv',
-    ['Payment ID', 'Registration ID', 'Attendee', 'Email', 'Event', 'Event date', 'EventoPlanners reference', 'Paynow reference', 'Amount USD', 'Status', 'Created at'],
-    payments.map((payment) => [payment.id, payment.registration_id, payment.user_name, payment.user_email, payment.event_title, String(payment.event_date).slice(0, 10), payment.reference, payment.paynow_reference || '', Number(payment.amount || 0).toFixed(2), payment.status, payment.created_at]),
+    ['Payment ID', 'Registration ID', 'Attendee', 'Email', 'Event', 'Event date', 'Method', 'EventoPlanners reference', 'Provider/external reference', 'Amount USD', 'Status', 'Confirmed by', 'Confirmed at', 'Created at'],
+    payments.map((payment) => [payment.id, payment.registration_id, payment.user_name, payment.user_email, payment.event_title, String(payment.event_date).slice(0, 10), paymentMethodLabel(payment.payment_method), payment.reference, payment.paynow_reference || payment.external_reference || '', Number(payment.amount || 0).toFixed(2), payment.status, payment.confirmed_by_name || '', payment.confirmed_at || '', payment.created_at]),
   );
 
   return (
@@ -632,8 +642,9 @@ export default function AdminReportsPage() {
                         <tr>
                           <th className="sticky left-0 z-20 w-[240px] min-w-[240px] max-w-[240px] border-r border-slate-200 bg-slate-50 px-5 py-4 shadow-[6px_0_10px_-10px_rgba(15,23,42,0.35)] dark:border-slate-800 dark:bg-slate-950">Attendee</th>
                           <th className="px-5 py-4">Event</th>
+                          <th className="px-5 py-4">Method</th>
                           <th className="px-5 py-4">Reference</th>
-                          <th className="px-5 py-4">Paynow reference</th>
+                          <th className="px-5 py-4">Provider / external</th>
                           <th className="px-5 py-4">Amount</th>
                           <th className="px-5 py-4">Status</th>
                           <th className="px-5 py-4">Created</th>
@@ -648,8 +659,9 @@ export default function AdminReportsPage() {
                               <p className="mt-1 text-[11px] font-semibold text-slate-400 dark:text-slate-500">Registration #{payment.registration_id}</p>
                             </td>
                             <td className="px-5 py-4"><p className="font-semibold text-slate-900 dark:text-white">{payment.event_title}</p><p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{formatDate(payment.event_date)}</p></td>
+                            <td className="px-5 py-4 text-xs font-bold text-slate-700 dark:text-slate-200">{paymentMethodLabel(payment.payment_method)}</td>
                             <td className="max-w-[220px] break-all px-5 py-4 font-mono text-xs text-slate-600 dark:text-slate-300">{payment.reference}</td>
-                            <td className="max-w-[190px] break-all px-5 py-4 text-xs text-slate-500 dark:text-slate-400">{payment.paynow_reference || '—'}</td>
+                            <td className="max-w-[190px] break-all px-5 py-4 text-xs text-slate-500 dark:text-slate-400">{payment.paynow_reference || payment.external_reference || '—'}</td>
                             <td className="px-5 py-4 font-black text-slate-950 dark:text-white">{formatMoney(payment.amount)}</td>
                             <td className="px-5 py-4"><StatusBadge status={payment.status} /></td>
                             <td className="px-5 py-4 text-slate-500 dark:text-slate-400">{formatDateTime(payment.created_at)}</td>

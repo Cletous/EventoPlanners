@@ -46,6 +46,8 @@ export async function GET(request) {
          SUM(CASE WHEN p.status = 'paid' THEN 1 ELSE 0 END) AS paid_payment_count,
          latest.reference AS latest_payment_reference,
          latest.paynow_reference AS latest_paynow_reference,
+         latest.external_reference AS latest_external_reference,
+         latest.payment_method AS latest_payment_method,
          latest.status AS latest_payment_status,
          latest.amount AS latest_payment_amount,
          latest.created_at AS latest_payment_created_at,
@@ -66,7 +68,7 @@ export async function GET(request) {
          r.id, r.user_id, r.event_id, r.status, r.created_at, r.updated_at,
          u.name, u.email,
          e.title, e.venue, e.event_date, e.start_time, e.registration_fee, e.status,
-         latest.reference, latest.paynow_reference, latest.status, latest.amount,
+         latest.reference, latest.paynow_reference, latest.external_reference, latest.payment_method, latest.status, latest.amount,
          latest.created_at, latest.poll_url
        ORDER BY r.created_at DESC, r.id DESC`,
       values,

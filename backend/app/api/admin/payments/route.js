@@ -12,6 +12,7 @@ function unauthorized(authentication) {
 }
 
 const allowedStatuses = new Set(['pending', 'paid', 'failed']);
+const allowedMethods = new Set(['paynow', 'bank_transfer', 'manual']);
 
 export async function GET(request) {
   const authentication = await authenticateRequest(request, ['admin']);
@@ -20,6 +21,7 @@ export async function GET(request) {
   try {
     const search = request.nextUrl.searchParams.get('search')?.trim() || '';
     const status = request.nextUrl.searchParams.get('status')?.trim() || '';
+    const method = request.nextUrl.searchParams.get('method')?.trim() || '';
     const conditions = [];
     const values = [];
 
@@ -27,9 +29,9 @@ export async function GET(request) {
       const pattern = `%${search}%`;
       conditions.push(`(
         u.name LIKE ? OR u.email LIKE ? OR e.title LIKE ? OR
-        p.reference LIKE ? OR p.paynow_reference LIKE ?
+        p.reference LIKE ? OR p.paynow_reference LIKE ? OR p.external_reference LIKE ?
       )`);
-      values.push(pattern, pattern, pattern, pattern, pattern);
+      values.push(pattern, pattern, pattern, pattern, pattern, pattern);
     }
 
     if (status && allowedStatuses.has(status)) {
@@ -37,20 +39,28 @@ export async function GET(request) {
       values.push(status);
     }
 
+    if (method && allowedMethods.has(method)) {
+      conditions.push('p.payment_method = ?');
+      values.push(method);
+    }
+
     const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
     const [payments] = await pool.execute(
       `SELECT
-         p.id, p.registration_id, p.amount, p.reference, p.paynow_reference,
-         p.status, p.created_at, p.updated_at,
+         p.id, p.registration_id, p.payment_method, p.amount, p.reference, p.paynow_reference,
+         p.external_reference, p.confirmation_notes, p.status, p.confirmed_by, p.confirmed_at,
+         p.created_at, p.updated_at,
          (p.poll_url IS NOT NULL AND p.poll_url <> '') AS can_poll,
          r.status AS registration_status,
          u.id AS user_id, u.name AS user_name, u.email AS user_email,
+         confirmer.name AS confirmed_by_name, confirmer.email AS confirmed_by_email,
          e.id AS event_id, e.title AS event_title, e.event_date, e.start_time
        FROM payments p
        INNER JOIN registrations r ON r.id = p.registration_id
        INNER JOIN users u ON u.id = r.user_id
        INNER JOIN events e ON e.id = r.event_id
+       LEFT JOIN users confirmer ON confirmer.id = p.confirmed_by
        ${whereClause}
        ORDER BY p.created_at DESC, p.id DESC`,
       values,

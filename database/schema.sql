@@ -61,17 +61,27 @@ CREATE TABLE IF NOT EXISTS registrations (
 CREATE TABLE IF NOT EXISTS payments (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   registration_id BIGINT UNSIGNED NOT NULL,
+  payment_method ENUM('paynow', 'bank_transfer', 'manual') NOT NULL DEFAULT 'paynow',
   amount DECIMAL(10,2) NOT NULL,
   reference VARCHAR(100) NOT NULL,
   paynow_reference VARCHAR(150) NULL,
+  external_reference VARCHAR(150) NULL,
+  confirmation_notes VARCHAR(500) NULL,
   poll_url VARCHAR(1000) NULL,
   status ENUM('pending', 'paid', 'failed') NOT NULL DEFAULT 'pending',
+  confirmed_by BIGINT UNSIGNED NULL,
+  confirmed_at DATETIME NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY uq_payments_reference (reference),
   KEY idx_payments_registration_id (registration_id),
+  KEY idx_payments_method (payment_method),
+  KEY idx_payments_confirmed_by (confirmed_by),
   CONSTRAINT fk_payments_registration
     FOREIGN KEY (registration_id) REFERENCES registrations(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT fk_payments_confirmed_by
+    FOREIGN KEY (confirmed_by) REFERENCES users(id)
+    ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB;

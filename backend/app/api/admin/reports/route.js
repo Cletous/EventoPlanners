@@ -122,14 +122,16 @@ export async function GET(request) {
 
     const [payments] = await pool.execute(
       `SELECT
-         p.id, p.registration_id, p.amount, p.reference, p.paynow_reference,
-         p.status, p.created_at,
+         p.id, p.registration_id, p.payment_method, p.amount, p.reference, p.paynow_reference,
+         p.external_reference, p.confirmation_notes, p.status, p.confirmed_at, p.created_at,
          u.id AS user_id, u.name AS user_name, u.email AS user_email,
+         confirmer.name AS confirmed_by_name, confirmer.email AS confirmed_by_email,
          e.id AS event_id, e.title AS event_title, e.event_date
        FROM payments p
        INNER JOIN registrations r ON r.id = p.registration_id
        INNER JOIN users u ON u.id = r.user_id
        INNER JOIN events e ON e.id = r.event_id
+       LEFT JOIN users confirmer ON confirmer.id = p.confirmed_by
        ${whereClause}
        ORDER BY p.created_at DESC, p.id DESC`,
       values,

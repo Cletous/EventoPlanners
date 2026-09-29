@@ -27,14 +27,20 @@ test.describe('Admin operational workspaces', () => {
     await cardOrRow.getByRole('button', { name: 'Confirm offline', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'Confirm payment' });
     await dialog.getByText('Manual payment', { exact: true }).click();
-    await dialog.getByPlaceholder('Receipt, voucher or other reference').fill(`E2E-RECEIPT-${Date.now()}`);
+    const receiptReference = `E2E-RECEIPT-${Date.now()}`;
+    await dialog.getByPlaceholder('Receipt, voucher or other reference').fill(receiptReference);
     await dialog.getByPlaceholder('Add any verification notes that should remain with the payment audit trail.').fill('Confirmed by Playwright E2E test.');
     await dialog.getByRole('button', { name: 'Confirm received payment' }).click();
     await expect(page.getByText(/confirmed/i).first()).toBeVisible();
 
     await page.goto('/admin/payments');
-    await expect(page.getByText(user.email).first()).toBeVisible();
-    await expect(page.getByText('Manual payment').first()).toBeVisible();
+    await page.getByPlaceholder('Search attendee, email, event or payment reference').fill(receiptReference);
+    await page.getByRole('button', { name: 'Apply', exact: true }).click();
+
+    const paymentRow = page.locator('tr').filter({ hasText: receiptReference });
+    await expect(paymentRow).toBeVisible();
+    await expect(paymentRow).toContainText(user.email);
+    await expect(paymentRow).toContainText('Manual payment');
   });
 
   test('admin registrations, payments and reports pages load', async ({ page }) => {

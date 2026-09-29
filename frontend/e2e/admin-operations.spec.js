@@ -21,9 +21,9 @@ test.describe('Admin operational workspaces', () => {
     await page.goto('/admin/registrations');
     await page.getByPlaceholder('Search attendee, email, event or venue').fill(user.email);
     await page.getByRole('button', { name: 'Apply' }).click();
-    await expect(page.getByText(user.email).first()).toBeVisible();
 
     const cardOrRow = page.locator('tr').filter({ hasText: user.email });
+    await expect(cardOrRow).toBeVisible();
     await cardOrRow.getByRole('button', { name: 'Confirm offline', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'Confirm payment' });
     await dialog.getByText('Manual payment', { exact: true }).click();

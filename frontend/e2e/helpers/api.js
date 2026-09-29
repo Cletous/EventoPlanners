@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 
-export const API_BASE = process.env.E2E_API_URL || 'http://127.0.0.1:3001/api';
+export const API_BASE = process.env.E2E_API_URL || 'http://localhost:3001/api';
 
 export function uniqueValue(prefix = 'e2e') {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;

@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const frontendUrl = process.env.E2E_BASE_URL || 'http://127.0.0.1:5173';
-const backendUrl = process.env.E2E_API_URL || 'http://127.0.0.1:3001';
+const frontendUrl = process.env.E2E_BASE_URL || 'http://localhost:5173';
+const backendUrl = process.env.E2E_API_URL || 'http://localhost:3001';
 
 export default defineConfig({
   testDir: './e2e',
@@ -25,7 +25,7 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'npm run dev -- --host 127.0.0.1',
+      command: 'npm run dev -- --host localhost',
       url: frontendUrl,
       reuseExistingServer: true,
       timeout: 120_000,

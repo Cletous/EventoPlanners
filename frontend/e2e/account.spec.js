@@ -13,9 +13,9 @@ test.describe('Self-service account management', () => {
     await expect(page.getByText(/profile.*updated|updated successfully/i)).toBeVisible();
 
     const newPassword = 'EventoChanged!456';
-    await page.getByLabel('Current password').fill(user.password);
-    await page.getByLabel('New password').fill(newPassword);
-    await page.getByLabel('Confirm new password').fill(newPassword);
+    await page.getByLabel('Current password', { exact: true }).fill(user.password);
+    await page.getByLabel('New password', { exact: true }).fill(newPassword);
+    await page.getByLabel('Confirm new password', { exact: true }).fill(newPassword);
     await page.getByRole('button', { name: 'Change password' }).click();
     await expect(page.getByText(/password.*changed|changed successfully/i)).toBeVisible();
   });
@@ -25,7 +25,7 @@ test.describe('Self-service account management', () => {
     await injectToken(page, user.token);
     await page.goto('/account');
 
-    await page.getByLabel('Current password to confirm deletion').fill(user.password);
+    await page.getByLabel('Current password to confirm deletion', { exact: true }).fill(user.password);
     await page.getByRole('button', { name: 'Delete my account' }).click();
     const dialog = page.getByRole('dialog');
     await dialog.getByRole('button', { name: /Delete account|Confirm deletion|Delete my account/i }).last().click();

@@ -4,7 +4,7 @@ import { adminCredentials } from './api.js';
 export async function loginViaUi(page, email, password) {
   await page.goto('/login');
   await page.getByLabel('Email address').fill(email);
-  await page.getByLabel('Password').fill(password);
+  await page.getByLabel('Password', { exact: true }).fill(password);
   await page.getByRole('button', { name: 'Sign in' }).click();
 }
 
